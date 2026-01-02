@@ -104,8 +104,5 @@ class AuthController extends Controller
         return view('profile', ['profile' => $profile]);
     }
 
-    public function dashboard()
-    {
-        return view('dashboard');
-    }
+    
 }

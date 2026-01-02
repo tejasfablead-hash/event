@@ -12,11 +12,7 @@ use Illuminate\Validation\Rule;
 
 class BookingController extends Controller
 {
-    public function index(){
-        $customer = User::all();
-        $event = Event::all();
-        return view('book.insert',compact(['customer','event']));
-    }
+    
 
     public function book(Request $request)
     {
