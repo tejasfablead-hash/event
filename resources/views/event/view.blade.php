@@ -1,5 +1,8 @@
 @extends('index')
 @section('container')
+<style>
+    
+</style>
     <div class="main-panel">
         <div class="content-wrapper">
             <div class="page-header">
@@ -15,7 +18,7 @@
             </div>
 
             <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
+                <div class="card shadow-sm rounded-4">
                     <div class="card-body">
                         @if (Auth::user()->role == 1)
                             <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
@@ -30,7 +33,8 @@
                         @else
                         @endif
                         <br>
-                        <table class="table table-striped" id="myTable">
+                     <table class="table table-bordered table-hover rounded-table" id="myTable">
+
                             <thead>
                                 <tr>
                                     <th>
@@ -89,29 +93,18 @@
                                         <td>
                                             {{ $item->price }}
                                         </td>
-                                        @if (Auth::user()->role == 1)
                                             <td>&nbsp;&nbsp;&nbsp;
                                                 <a href="{{ route('EventDetailPage', $item->id) }}"
-                                                    class=" text-decoration-none"><i class="mdi mdi-eye "></i>
+                                                    class=" text-decoration-none "><i class="mdi mdi-eye mdi-24px color-black"></i>
                                                 </a>&nbsp;&nbsp;&nbsp;
                                                 <a href="{{ route('EditEventPage', $item->id) }}"
-                                                    class=" text-decoration-none"><i class="mdi mdi-pencil"></i>
+                                                    class=" text-decoration-none  text-dark"><i class="mdi mdi-pencil-box mdi-24px"></i>
                                                 </a>&nbsp;&nbsp;&nbsp;
-                                                <a href="javascript:void(0)" class=" text-decoration-none"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del"></i>
+                                                <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
+                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del mdi-24px"></i>
                                                 </a>
                                             </td>
-                                        @else
-                                            <td>&nbsp;&nbsp;&nbsp;
-                                                <a href="{{ route('EventDetailPage', $item->id) }}"
-                                                    class=" text-decoration-none"><i class="mdi mdi-eye "></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
-                                                <a href="" class=" text-decoration-none open-model"
-                                                    data-bs-toggle="modal" data-bs-target="#topUpModal"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-book-plus"></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
-                                            </td>
-                                        @endif
+                                     
                                     </tr>
                                     <div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="eventModalLabel"
                                         aria-hidden="true">
@@ -123,7 +116,7 @@
                                                     <h5 class="modal-title fw-bold" id="eventModalLabel">
                                                         Book Event
                                                     </h5>
-                                                    <button type="button" class="btn-close" onclick="reset()"
+                                                    <button type="button" class="btn-close border-0" 
                                                         data-bs-dismiss="modal" aria-label="Close">X</button>
                                                 </div>
 

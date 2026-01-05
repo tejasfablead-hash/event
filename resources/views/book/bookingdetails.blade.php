@@ -38,13 +38,14 @@
                                         <div class="mb-3 d-flex justify-content-center align-items-center"
                                             style="height:300px;background:#f8f9fa;border-radius:8px;">
                                             <img src="{{ asset('/storage/' . $images[0]) }}" class="img-fluid rounded"
-                                             id="mainEventImage"    style="max-height:100%;object-fit:contain;">
+                                                id="mainEventImage" style="max-height:100%;object-fit:contain;">
                                         </div>
 
                                         <div class="d-flex flex-wrap gap-2">
                                             @foreach ($images as $image)
                                                 <img src="{{ asset('/storage/' . $image) }}" class="rounded border"
-                                                  onclick="changeEventImage(this.src)"  style="width:70px;height:70px;object-fit:cover;">
+                                                    onclick="changeEventImage(this.src)"
+                                                    style="width:70px;height:70px;object-fit:cover;">
                                             @endforeach
 
                                         </div>
@@ -55,13 +56,13 @@
                                 <div class="col-md-7 ">
 
                                     <!-- EVENT INFO -->
-                                    <h3 class="mb-1 text-capitalize" >Title : {{ $data->getevent->title }}</h3>
-                                    <p class="text-muted text-capitalize"> Desc : 
+                                    <h3 class="mb-1 text-capitalize">Title : {{ $data->getevent->title }}</h3>
+                                    <p class="text-muted text-capitalize"> Desc :
                                         {{ $data->getevent->desc }}
                                     </p>
 
                                     <h4 class="text-primary text-capitalize font-weight-bold">
-                                     Price :  ₹ {{ $data->getevent->price }}
+                                        Price : ₹ {{ $data->getevent->price }}
                                     </h4>
 
                                     <hr>
@@ -74,10 +75,11 @@
                                         </div>
                                         <div class="col-sm-6">
                                             <p><strong>Capacity :</strong> {{ $data->getevent->capacity }} People</p>
-                                        
+                                            <p><strong>Total :</strong> {{ $data->grandtotal }} </p>
+
                                         </div>
                                     </div>
- <hr>
+                                    <hr>
                                     <!-- BOOKING DETAILS -->
                                     <h5 class="mb-2">📅 Booking Details</h5>
 
@@ -105,18 +107,24 @@
                                         <img src="{{ asset('/storage/user/' . $data->getcustomer->image) }}"
                                             class="rounded-circle mr-3" style="width:60px;height:60px;object-fit:cover;">
                                         <div>
-                                            <p class="mb-0 font-weight-bold text-capitalize">{{ $data->getcustomer->name }}</p>
+                                            <p class="mb-0 font-weight-bold text-capitalize">{{ $data->getcustomer->name }}
+                                            </p>
                                             <p class="mt-1 text-muted">{{ $data->getcustomer->email }}</p>
                                         </div>
                                     </div>
 
                                     <!-- ACTIONS -->
                                     <div class="mt-4">
-                                        <a href="javascript:void(0)" class="text-decoration-none open-modal d-none"
+                                        {{-- <a href="javascript:void(0)" class="text-decoration-none open-modal "
                                             data-bs-toggle="modal" data-bs-target="#topUpModal"
                                             data-id="{{ $data->id }}" data-status="{{ $data->status }}"> <button
                                                 class="btn btn-gradient-success">
-                                                Update Status
+                                                Update Booking
+                                            </button></a> --}}
+                                        <a href=" {{ route('EventsMultiBookEditPage', $data->id) }}"
+                                            class="text-decoration-none open-modal "> <button
+                                                class="btn btn-gradient-success">
+                                                Update Booking
                                             </button></a>
                                         <a href="{{ route('EventsBookViewPage') }}"><button class="btn btn-dark">
                                                 Back
@@ -139,7 +147,7 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Update Booking Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
+                    <button type="button" class="btn-close border-0" data-bs-dismiss="modal">X</button>
                 </div>
 
                 <div class="modal-body">
@@ -161,7 +169,7 @@
                         </button>
                     </form>
 
-                    <div id="message" class="alert alert-success mt-2 d-none"></div>
+                    <div id="message" class="alert alert-success text-center mt-2 d-none"></div>
                 </div>
             </div>
         </div>
@@ -204,7 +212,7 @@
             })
         });
 
-         function changeEventImage(src) {
+        function changeEventImage(src) {
             document.getElementById('mainEventImage').src = src;
         }
     </script>

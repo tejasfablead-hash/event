@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -101,8 +103,54 @@ class AuthController extends Controller
     public function profile()
     {
         $profile = Auth::user();
-        return view('profile', ['profile' => $profile]);
+        return view('pages.profile', compact('profile'));
     }
 
-    
+    public function edit()
+    {
+
+        $data = User::where('id', Auth::id())->first();
+        return view('pages.update', compact('data'));
+    }
+
+
+    public function update(Request $request)
+    {
+        $data = User::where('id', Auth::id())->first();
+        $new = $data->image;
+        $validate = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($data->id),
+            ],
+            'image' => 'image|mimes:png,jpg,svg'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validate->errors()
+            ], 422);
+        }
+        if ($request->hasFile('image')) {
+            Storage::disk('public')->delete('user/' . $data->image);
+            $file = $request->file('image');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $file->storeAs('user', $filename, 'public');
+            $new = $filename;
+        }
+
+        $result = $data->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'image' =>  $new
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Profile Updated Successfully',
+            'data' => $result
+        ]);
+    }
 }

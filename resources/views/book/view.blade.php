@@ -22,16 +22,17 @@
                             <!-- Title -->
                             <h4 class=" fw-bold text-dark">Manage Booking Data</h4>
                             <div class="d-flex">
-                                    <a href="{{ route('EventsIndexPage') }}" class="btn btn-primary btn-sm shadow-sm">
-                                        <i class="mdi mdi-plus"></i> Add New Record
-                                    </a>
-                                </div>
+                                <a href="{{ route('EventsIndexPage') }}" class="btn btn-primary btn-sm shadow-sm">
+                                    <i class="mdi mdi-plus"></i> Add New Booking
+                                </a>
+                            </div>
                         </div>
-
                         <br>
+
                         <table class="table table-striped" id="myTable">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>
                                         Customer
                                     </th>
@@ -49,22 +50,34 @@
                                         Qty
                                     </th>
                                     <th>
+                                        Price
+                                    </th>
+                                     <th>
+                                       Total Price
+                                    </th>
+                                    <th>
                                         Status
                                     </th>
+
                                     <th>
                                         Action
                                     </th>
                                 </tr>
                             </thead>
                             <tbody class="text-capitalize">
-
+                                @php
+                                    $count = 1;
+                                @endphp
                                 @foreach ($book as $item)
                                     <tr>
                                         <td class="py-1">
+                                            {{ $count++ }}
+                                        </td>
+                                        <td>
                                             {{ $item->getcustomer->name }}
                                         </td>
                                         <td>
-                                            {{ $item->getevent->title }}
+                                            {{substr( $item->getevent->title,0,10) }}
                                         </td>
                                         <td>
                                             {{ optional($item->start_date)->format('d M Y') }}
@@ -76,31 +89,35 @@
                                             {{ $item->qty }}
                                         </td>
                                         <td>
+                                            ₹ {{ number_format((float) $item->total) }}
+                                        </td>
+                                        <td>
+                                            ₹ {{ number_format((float) $item->grandtotal) }}
+                                        </td>
+                                        <td>
                                             {{ $item->status }}
                                         </td>
+
                                         <td>&nbsp;&nbsp;&nbsp;
-                                            @if (Auth::user()->role == 1)
-                                                <a href="{{ route('EventsBookDetailPage', $item->id) }}"
-                                                    class=" text-decoration-none"><i class="mdi mdi-eye "></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
-                                                <a href="javascript:void(0)" class="text-decoration-none open-modal"
-                                                    data-bs-toggle="modal" data-bs-target="#topUpModal"
-                                                    data-id="{{ $item->id }}" data-status="{{ $item->status }}">
-                                                    <i class="mdi mdi-pencil"></i>
-                                                </a>
-                                                &nbsp;&nbsp;&nbsp;
-                                                <a href="javascript:void(0)" class=" text-decoration-none"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del"></i>
-                                                </a>
-                                            @else
-                                                &nbsp;&nbsp;&nbsp;
-                                                <a href="{{ route('EventsBookDetailPage', $item->id) }}"
-                                                    class=" text-decoration-none"><i class="mdi mdi-eye "></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
-                                                <a href="javascript:void(0)" class=" text-decoration-none"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del"></i>
-                                                </a>
-                                            @endif
+
+                                            <a href="{{ route('EventsBookDetailPage', $item->id) }}"
+                                                class=" text-decoration-none  "><i class="mdi mdi-eye mdi-24px"></i>
+                                            </a>&nbsp;&nbsp;&nbsp;
+
+                                            <a href=" {{ route('EventsMultiBookEditPage', $item->id) }}"
+                                                class="text-decoration-none  text-dark open-modal">
+                                                <i class="mdi mdi-pencil-box mdi-24px"></i>
+                                            </a>
+                                            {{-- <a href="javascript:void(0)" class="text-decoration-none text-dark open-modal"
+                                                data-bs-toggle="modal" data-bs-target="#topUpModal"
+                                                data-id="{{ $item->id }}" data-status="{{ $item->status }}">
+                                                <i class="mdi mdi-pencil-box mdi-24px"></i>
+                                            </a>EventsMultiBookEditPage --}}
+                                            &nbsp;&nbsp;&nbsp;
+                                            <a href="javascript:void(0)" class=" text-danger text-decoration-none"
+                                                data-id="{{ $item->id }}"><i
+                                                    class="mdi mdi-delete btn-del mdi-24px"></i>
+                                            </a>
 
                                         </td>
                                     </tr>
@@ -119,7 +136,7 @@
 
                     <div class="modal-header">
                         <h5 class="modal-title">Update Booking Status</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
+                        <button type="button" class="btn-close border-0" data-bs-dismiss="modal">X</button>
                     </div>
 
                     <div class="modal-body">
@@ -140,8 +157,7 @@
                                 Update Status
                             </button>
                         </form>
-
-                        <div id="message" class="alert alert-success mt-2 d-none"></div>
+                        <div id="message" class="alert alert-success text-center mt-2 d-none"></div>
                     </div>
                 </div>
             </div>
@@ -181,6 +197,7 @@
                                         .row(obj.closest('tr'))
                                         .remove()
                                         .draw(false);
+                                    reIndexTableRows(table);
                                 }, function(error) {
                                     console.log(error);
                                 });
@@ -190,6 +207,15 @@
                         });
                 });
 
+                function reIndexTableRows(dataTableInstance) {
+                    dataTableInstance.rows().nodes().each(function(row, index) {
+                        $(row).find('.btn-del').each(function() {
+                            $(this).data('id', index + 1);
+                            $(row).find('td:first').text(index + 1);
+                        });
+                    });
+                }
+
                 $(document).on('click', '.open-modal', function() {
                     let id = $(this).data('id');
                     let status = $(this).data('status');
@@ -197,7 +223,6 @@
                     $('#status').val(status);
 
                 });
-
 
                 $('#modelform').on('submit', function(e) {
                     e.preventDefault();

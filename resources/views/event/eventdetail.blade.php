@@ -83,24 +83,15 @@
                                             </p>
                                         </div>
                                     </div>
-                                    @if (Auth::user()->role == 1)
                                         <a href="{{ route('EditEventPage', $data->id) }}"
                                             class="btn btn-gradient-info mt-3">
                                             Edit Event
                                         </a>
-                                        <button class="btn btn-light mt-3">
+                                        <a href="{{route('EventViewPage')}}"
+                                        > <button class="btn btn-dark mt-3">
                                             Back
-                                        </button>
-                                    @else
-                                        <a href="" class="text-decoration-none open-model btn btn-gradient-info mt-3"
-                                            data-bs-toggle="modal" data-bs-target="#topUpModal"
-                                            data-id="{{ $data->id }}">
-                                            Book Event
-                                        </a>
-                                        <button class="btn btn-dark mt-3">
-                                            Back
-                                        </button>
-                                    @endif
+                                        </button></a>
+                                  
                                 </div>
                             </div>
 
@@ -114,7 +105,7 @@
                     <div class="card-body">
 
                         @if ($result->count() > 0)
-                            <h4 class="card-title">Event Request</h4>
+                            <h4 class="card-title">Event Booking Request</h4>
                             <table class="table table-bordered">
                                 <thead class="table-dark">
                                     <tr>
@@ -159,14 +150,11 @@
                                                 {{ $item->status }}
                                             </td>
                                             <td>&nbsp;&nbsp;&nbsp;
-                                                @if (Auth::user()->role == 1)
+                                           
                                                     <a href="{{ route('EventsBookDetailPage', $item->id) }}"
                                                         class=" text-decoration-none"><i class="mdi mdi-eye "></i>
                                                     </a>
-                                                @else
-                                                  
-                                                @endif
-
+                                          
                                             </td>
                                         </tr>
                                     @endforeach
@@ -195,7 +183,7 @@
                     <h5 class="modal-title fw-bold" id="eventModalLabel">
                         Book Event
                     </h5>
-                    <button type="button" class="btn-close" onclick="reset()" data-bs-dismiss="modal"
+                    <button type="button" class="btn-close border-0" onclick="reset()" data-bs-dismiss="modal"
                         aria-label="Close">X</button>
                 </div>
 
