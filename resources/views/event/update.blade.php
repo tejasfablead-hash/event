@@ -2,10 +2,10 @@
 @section('container')
     <div class="main-panel">
         <div class="content-wrapper">
-            <div class="page-header">
-                <h5 class="page-title pr-5">
+            <div class="page-header ">
+                <h6 class="page-title pr-5">
                     <div id="message" class="alert alert-success text-center d-none" role="alert"></div>
-                </h5>
+                </h6>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="#">Forms</a></li>

@@ -30,7 +30,7 @@
                  </nav>
              </div>
              <div class="row">
-                 <div class="col-md-4 stretch-card grid-margin">
+                 <div class="col-md-3 stretch-card grid-margin">
                      <div class="card bg-gradient-danger card-img-holder text-white">
                          <div class="card-body">
                              <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
@@ -41,7 +41,7 @@
                          </div>
                      </div>
                  </div>
-                 <div class="col-md-4 stretch-card grid-margin">
+                 <div class="col-md-3 stretch-card grid-margin">
                      <div class="card bg-gradient-info card-img-holder text-white">
                          <div class="card-body">
                              <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
@@ -52,14 +52,25 @@
                          </div>
                      </div>
                  </div>
-                 <div class="col-md-4 stretch-card grid-margin">
+                 <div class="col-md-3 stretch-card grid-margin">
                      <div class="card bg-gradient-success card-img-holder text-white">
                          <div class="card-body">
                              <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
                              <h4 class="font-weight-normal mb-3">Total Customer
-                                 <i class="mdi mdi-diamond mdi-24px float-right"></i>
+                                 <i class="mdi mdi-account-circle mdi-24px float-right"></i>
                              </h4>
                              <h2 class="mb-5">{{ $customer }}</h2>
+                         </div>
+                     </div>
+                 </div>
+                   <div class="col-md-3 stretch-card grid-margin">
+                     <div class="card bg-gradient-dark card-img-holder text-white">
+                         <div class="card-body">
+                             <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" />
+                             <h4 class="font-weight-normal mb-3">Total Pending
+                                 <i class="mdi mdi-clock-alert mdi-24px float-right"></i>
+                             </h4>
+                             <h2 class="mb-5">{{ $pending }}</h2>
                          </div>
                      </div>
                  </div>
@@ -84,63 +95,58 @@
                  </div>
              </div>
 
-          <!-- Simple Event Details Modal -->
-<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
+             <!-- Simple Event Details Modal -->
+             <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-centered modal-md">
+                     <div class="modal-content">
 
-            <!-- Header -->
-            <div class="modal-header text-capitalize">
-                <h5 class="modal-title">Booking Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
-            </div>
+                         <div class="modal-header text-capitalize">
+                             <h5 class="modal-title">Booking Details</h5>
+                             <button type="button" class="btn-close border-0" data-bs-dismiss="modal">X</button>
+                         </div>
 
-            <!-- Body -->
-            <div class="modal-body text-capitalize">
+                         <div class="modal-body text-capitalize">
 
-                <div class="d-flex  gap-2 mb-2">
-                    <span class="text-muted">Customer : </span>
-                    <strong id="m_customer"></strong>
-                </div>
+                             <div class="d-flex  gap-2 mb-2">
+                                 <span class="text-muted">Customer : </span>
+                                 <strong id="m_customer"></strong>
+                             </div>
 
-                <div class="d-flex gap-2  mb-2">
-                    <span class="text-muted">Event : </span>
-                    <strong id="m_event"></strong>
-                </div>
+                             <div class="d-flex gap-2  mb-2">
+                                 <span class="text-muted">Event : </span>
+                                 <strong id="m_event"></strong>
+                             </div>
 
-                <hr>
+                             <hr>
 
-                <div class="d-flex gap-2  mb-2">
-                    <span class="text-muted">Start Date : </span>
-                    <span id="m_start"></span>
-                </div>
+                             <div class="d-flex gap-2  mb-2">
+                                 <span class="text-muted">Start Date : </span>
+                                 <span id="m_start"></span>
+                             </div>
 
-                <div class="d-flex mb-2">
-                    <span class="text-muted">End Date : </span>
-                    <span id="m_end"  class="gap-2"></span>
-                </div>
+                             <div class="d-flex mb-2">
+                                 <span class="text-muted">End Date : </span>
+                                 <span id="m_end" class="gap-2"></span>
+                             </div>
 
-                <hr>
+                             <hr>
 
-                <div class="d-flex ">
-                    <span class="text-muted">Status : </span>
-                    <span id="m_status"></span>
-                </div>
+                             <div class="d-flex ">
+                                 <span class="text-muted">Status : </span>
+                                 <span id="m_status"></span>
+                             </div>
 
-            </div>
+                         </div>
 
-            <!-- Footer -->
-            <div class="modal-footer">
-                <button class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-                    Close
-                </button>
-            </div>
+                         <div class="modal-footer">
+                             <button class="btn btn-dark btn-sm" data-bs-dismiss="modal">
+                                 Close
+                             </button>
+                         </div>
 
-        </div>
-    </div>
-</div>
-
-
+                     </div>
+                 </div>
+             </div>
 
          </div>
          @include('footer')

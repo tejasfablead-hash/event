@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class MultiBookingcontroller extends Controller
 {
+    public function view()
+    {
+        $book = Booking::latest()->get();
+        return view('book.view', compact('book'));
+    }
+
     public function index()
     {
         $customer = User::all();
@@ -19,13 +25,15 @@ class MultiBookingcontroller extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'customer.*'  => 'required',
+            'customer'  => 'required',
             'event.*'     => 'required',
             'eventdate.*' => 'required',
             'qty.*'       => 'required|numeric|min:1',
+            'price.*'=>'required'
+
         ], [
-            'customer.*.required'  => 'Customer is required',
             'event.*.required'     => 'Event is required',
             'eventdate.*.required' => 'Event date is required',
             'qty.*.required'       => 'Quantity is required',
@@ -38,7 +46,7 @@ class MultiBookingcontroller extends Controller
             ], 422);
         }
 
-        foreach ($request->customer as $key => $value) {
+        foreach ($request->event as $key => $value) {
 
             $startdate = null;
             $enddate = null;
@@ -50,11 +58,13 @@ class MultiBookingcontroller extends Controller
             }
 
             Booking::create([
-                'customer'   => $request->customer[$key],
+                'customer'   => $request->customer,
                 'event'      => $request->event[$key],
                 'start_date' => $startdate,
                 'end_date'   => $enddate,
                 'qty'        => $request->qty[$key],
+                'total'=>$request->price[$key],
+                'grandtotal'=>$request->total[$key]
             ]);
         }
 
@@ -62,5 +72,65 @@ class MultiBookingcontroller extends Controller
             'status' => true,
             'message' => 'Event Booking Successfully',
         ]);
+    }
+
+    public function delete($id)
+    {
+        $data = Booking::where('id', $id)->first();
+        if (!$data) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Record Not Available'
+            ]);
+        }
+        $data->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Record Deleted Successfully'
+        ]);
+    }
+
+
+    public function edit($id)
+    {
+        $event = Event::all();
+        $single = Booking::where('id', $id)->first();
+        return view('book.update', compact(['event', 'single']));
+    }
+    public function update(Request $request)
+    {
+
+
+        $data = Booking::where('id', $request->id)->first();
+
+        $validate = Validator::make($request->all(), [
+            'status' => 'required',
+            'event' => 'required',
+            'qty' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validate->errors(),
+            ], 422);
+        }
+
+        $result = $data->update([
+            'event' => $request->event,
+            'qty'    => $request->qty,
+            'status' => $request->status
+        ]);
+        if ($result) {
+            return response()->json([
+                'status' => true,
+                'message' => ' Booking  Updated Successfully',
+                'data' => $result
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => ' Booking  Not Update.'
+            ]);
+        }
     }
 }

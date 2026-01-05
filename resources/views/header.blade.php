@@ -17,7 +17,7 @@
         </div>
         <ul class="navbar-nav navbar-nav-right">
           <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" id="profileDropdown" href="" data-toggle="dropdown" aria-expanded="false">
               <div class="nav-profile-img">
             <img src="{{asset('storage/user/'.Auth()->user()->image)}}" class="img-lg rounded-circle">
 
@@ -28,9 +28,9 @@
               </div>
             </a>
             <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="{{route('ProfilePage')}}">
                 <i class="mdi mdi-cached mr-2 text-success"></i>
-                Activity Log
+                Profile
               </a>
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" id="logout" href="#">

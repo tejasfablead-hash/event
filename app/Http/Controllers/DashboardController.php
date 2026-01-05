@@ -1,9 +1,9 @@
 <?php
 
-    namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
-    use App\Models\Booking;
-    use App\Models\Event;
+use App\Models\Booking;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -11,10 +11,11 @@ class DashboardController extends Controller
 {
     public function dashboard()
     {
-        $customer = User::all()->count();
-        $event = Event::all()->count();
-        $book = Booking::all()->count();
-        return view('dashboard',compact('customer','event','book'));
+        $customer = User::count();
+        $event = Event::count();
+        $book = Booking::count();
+        $pending = Booking::where('status','pending')->count();
+        return view('dashboard', compact('customer', 'event', 'book','pending'));
     }
 
     public function event()
@@ -29,8 +30,8 @@ class DashboardController extends Controller
                 'title' => $row->getevent->title . ' (' . $row->getcustomer->name . ')',
                 'start' => $row->start_date->format('Y-m-d'),
                 'end'   => $row->end_date
-                            ? $row->end_date->addDay()->format('Y-m-d')
-                            : $row->start_date->format('Y-m-d'),
+                    ? $row->end_date->addDay()->format('Y-m-d')
+                    : $row->start_date->format('Y-m-d'),
 
                 'extendedProps' => [
                     'customer' => $row->getcustomer->name,
@@ -43,7 +44,7 @@ class DashboardController extends Controller
             ];
         }
 
-       
+
 
         return response()->json($events);
     }

@@ -49,11 +49,7 @@ class BookingController extends Controller
         }
     }
 
-    public function view()
-    {
-        $book = Booking::all();
-        return view('book.view', compact('book'));
-    }
+   
 
     public function bookdetail($id)
     {
@@ -72,7 +68,6 @@ class BookingController extends Controller
     {
         
         $data = Booking::where('id', $request->id)->first();
-
         $validate = Validator::make($request->all(), [
             'status' => 'required'
         ]);
@@ -100,18 +95,5 @@ class BookingController extends Controller
             ]);
         }
     }
-    public function delete($id){
-        $data = Booking::where('id',$id)->first();
-        if(!$data){
-             return response()->json([
-                'status' => false,
-                'message' => 'Record Not Available'
-            ]);
-        }
-        $data->delete();
-        return response()->json([
-            'status'=>true,
-            'message'=>'Record Deleted Successfully'
-        ]);
-    }
+  
 }
