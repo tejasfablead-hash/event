@@ -1,54 +1,84 @@
-@extends('index')
+{{-- @extends('index')
+
 @section('container')
     <div class="main-panel">
         <div class="content-wrapper">
-            <div class="page-header ">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
                 <h6 class="page-title pr-5">
-                    <div id="message" class="alert alert-success text-center d-none" role="alert"></div>
+                    <div id="message" class="alert alert-success text-center d-none"></div>
                 </h6>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Booking</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Update Booking</li>
+                        <li class="breadcrumb-item">Booking</li>
+                        <li class="breadcrumb-item active">Update Booking</li>
                     </ol>
                 </nav>
             </div>
+
             <div class="col-12 grid-margin">
                 <div class="card">
                     <div class="card-body">
+
                         <h4 class="card-title">Update Booking</h4>
                         <br>
-                        <form class="form-sample" id="updatebook" enctype="multipart/form-data">
+
+                        <form id="updatebook">
                             @csrf
+                            <input type="hidden" name="id" value="{{ $single->id }}">
+
+                            <!-- EVENT + CUSTOMER -->
                             <div class="row">
-                                <input type="hidden" name="id" class="form-control" value="{{ $single->id }}"
-                                    placeholder="enter title">
 
                                 <div class="col-md-6">
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Event</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control event border-redius" name="event">
-                                                <option value="">Select Event....</option>
+                                            <select class="form-control event" name="event">
+                                                <option value="">Select Event...</option>
                                                 @foreach ($event as $item)
-                                                    <option value="{{ $item->id }}"
-                                                        {{ isset($single) && $item->id == $single->event ? 'selected' : '' }}>
-                                                        {{ $item->title }}</option>
+                                                    <option value="{{ $item->id }}" data-price="{{ $item->price }}"
+                                                        {{ $item->id == $single->event ? 'selected' : '' }}>
+                                                        {{ $item->title }}
+                                                    </option>
                                                 @endforeach
                                             </select>
-                                            <span class="text-danger error eventerror" id="event_error"></span>
-                                            <input type="hidden" name="customer" class="form-control"
-                                                value="{{ $single->customer }}" placeholder="enter title">
+                                            <span class="text-danger error eventerror"></span>
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Customer</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control"
+                                                value="{{ $single->getcustomer->name }}" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- QTY + STATUS -->
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Qty</label>
+                                        <div class="col-sm-9">
+                                            <input type="number" name="qty" class="form-control qty"
+                                                value="{{ $single->qty }}" min="1">
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-6">
                                     <div class="form-group row">
                                         <label class="col-sm-3 col-form-label">Status</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control status border-redius" name="status">
-
-                                                <option value="">Select Status....</option>
+                                            <select class="form-control" name="status">
                                                 <option value="pending"
                                                     {{ $single->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                                 <option value="confirmed"
@@ -58,77 +88,555 @@
                                                     {{ $single->status == 'cancelled' ? 'selected' : '' }}>Cancelled
                                                 </option>
                                             </select>
-                                            <span class="text-danger error statuserror" id="status_error"></span>
                                         </div>
                                     </div>
-
                                 </div>
+
                             </div>
+
+                            <!-- START + END DATE -->
                             <div class="row">
+
                                 <div class="col-md-6">
                                     <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Qty</label>
+                                        <label class="col-sm-3 col-form-label">Start Date</label>
                                         <div class="col-sm-9">
-                                            <input type="number" name="qty" value="{{ $single->qty }}"
-                                                class="form-control qty" placeholder="enter qty">
-                                            <span class="text-danger error qtyerror" id="qty_error"></span>
+                                            <input type="text" name="startdate" value="{{ $single->start_date }}"
+                                                class="form-control startdate" placeholder="Select start date">
+                                            <span class="text-danger error startdate-error"></span>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-md-6">
-                                 
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">End Date</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="enddate" value="{{ $single->end_date }}"
+                                                class="form-control enddate" placeholder="Select end date">
+                                            <span class="text-danger error enddate-error"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- TOTAL -->
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Price</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="total" id="total" value="{{ $single->total }}" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <label class="col-sm-3 col-form-label">Grand Total</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="grandtotal" id="grandtotal" value="{{ $single->grandtotal }}" class="form-control" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- SUBMIT -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="submit" class="btn btn-gradient-primary" value="Update Booking">
                                 </div>
                             </div>
 
+                        </form>
 
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ asset('ajax.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+
+            function calculateTotal() {
+                let qty = parseInt($('.qty').val()) || 0;
+                let price = $('.event option:selected').data('price') || 0;
+
+                $('#total').val(price);
+                $('#grandtotal').val(qty * price);
+            }
+
+            $('.qty, .event').on('input change', calculateTotal);
+            calculateTotal();
+       
+
+            let endPicker;
+
+            flatpickr(".startdate", {
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                onChange: function(selectedDates) {
+                    if (selectedDates.length) {
+                        let minEnd = new Date(selectedDates[0]);
+                        minEnd.setDate(minEnd.getDate());
+                        endPicker.set("minDate", minEnd);
+                        endPicker.clear();
+                    }
+                }
+            });
+
+            endPicker = flatpickr(".enddate", {
+                dateFormat: "Y-m-d",
+                minDate: "today"
+            });
+
+            $('#updatebook').submit(function(e) {
+                e.preventDefault();
+                let isValid = true;
+                let start = $('.startdate').val();
+                let end = $('.enddate').val();
+                if (!start) {
+                    $('.startdate-error').text('Start date is required');
+                    isValid = false;
+                }
+                if (!end) {
+                    $('.enddate-error').text('End date is required');
+                    isValid = false;
+                }
+                if (!isValid) return;
+
+                var data = $('#updatebook')[0];
+                var formData = new FormData(data);
+                $('.error').text('');
+                var url = "{{ route('EventsBooksUpdatePage') }}";
+                reusableAjaxCall(url, 'POST', formData, function(response) {
+                    console.log(response.message);
+                    if (response.status == true) {
+                        $('#message').removeClass('d-none').html(response.message)
+                            .fadeIn();
+                        setTimeout(function() {
+                            $('#message').addClass('d-none').html('').fadeOut();
+                            window.location.href =
+                                "{{ route('EventsBookViewPage') }}";
+                        }, 4000);
+                    }
+                    $('#updatebook')[0].reset();
+                    $(".error").empty();
+                });
+            });
+
+        });
+    </script>
+@endsection --}}
+
+
+@extends('index')
+@section('container')
+    <style>
+        .gst-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #d1d5db;
+            transition: 0.3s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #4f46e5;
+
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
+
+        .gst-label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .table,
+        tr {
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+    </style>
+    <div class="main-panel">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h6 class="page-title pr-5">
+                    <div id="message" class="alert alert-success text-center d-none" role="alert"></div>
+                </h6>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">Event</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Update Event</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-12 grid-margin">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update Booking</h4>
+                        <br>
+
+                        <form class="form-sample" id="addform" enctype="multipart/form-data">
+                            @csrf
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label"></label>
-                                        <div class="col-sm-3">
-                                            <input type="submit" class="btn btn-gradient-primary mr-2" value="Update">
+                                <div class="col-md-4">
+                                    <label for=""> Customer</label>
+                                    <input type="text" name="customer" class="form-control customer"
+                                        placeholder="Select customer" value="{{ $single->getcustomer->name }}" readonly>
+                                    <span class="text-danger error customererror" id="customer_error"></span>
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="row ">
+                                <table id="table" class="table  
+                            table-bordered rounded">
+                                    <thead class="thead-dark  ">
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Select Date</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th colspan="2">Main Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="booking-row">
+                                            <td class="gap-2">
+                                                <select class="form-control event border-redius" name="event[]">
+                                                    <option value="">Select Event....</option>
+                                                    @foreach ($event as $item)
+                                                        <option value="{{ $item->id }}" data-price="{{ $item->price }}"
+                                                            {{ $item->id == $single->event ? 'selected' : '' }}>
+                                                            {{ $item->title }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger error eventerror"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="eventdate[]" class="form-control event_dates"
+                                                    placeholder="Select dates">
+                                                <span class="text-danger error eventdateerror"></span>
+                                            </td>
+
+                                            <td>
+                                                <input type="number" name="qty[]" value="1" class="form-control qty"
+                                                    placeholder="enter qty">
+                                                <span class="text-danger error qtyerror"></span>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="price[]" class="form-control price" readonly>
+                                                <span class="text-danger error priceerror"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="total[]" class="form-control total">
+                                                <span class="text-danger error totalerror"></span>
+                                            </td>
+                                            <td>
+                                                <i class="mdi mdi-plus-circle-outline mdi-24px" id="add"></i>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+                                <div class="row mt-2">
+                                    <div class="col-md-1">
+                                        <input type="submit" name="submit" class="btn btn-gradient-primary mr-2"
+                                            value="Update">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row mt-1 mb-1 d-flex justifly-content-space-between">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-5">
+                                    <div class="row "><b class="mt-2"> Total :
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>
+                                        <div class="col-md-9"> <input type="text" class="form-control" value="0.00"
+                                                readonly id="total">
                                         </div>
                                     </div>
                                 </div>
-
+                            </div>
+                            <div class="row mt-3 mb-1 d-flex justifly-content-space-between">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-5">
+                                    <div class="row "><b class="mt-2">Grand Total : </b>
+                                        <div class="col-md-9"> <input type="text" name="grandtotal[]"
+                                                class="form-control" value="0.00" readonly id="grandtotal">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script src="{{ asset('ajax.js') }}"></script>
-        <script>
-            $(document).ready(function() {
-               
+    <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('ajax.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        $(document).ready(function() {
 
-                $('#updatebook').submit(function(e) {
-                    e.preventDefault();
-                    var data = $('#updatebook')[0];
-                    var formData = new FormData(data);
+            function validateRow(row) {
+                let isValid = true;
 
-                    $('.error').text('');
-                    var url = "{{ route('EventsBooksUpdatePage') }}";
-                    reusableAjaxCall(url, 'POST', formData, function(response) {
-                        console.log(response.message);
-                        if (response.status == true) {
-                            $('#message').removeClass('d-none').html(response.message).fadeIn();
-                            setTimeout(function() {
-                                $('#message').addClass('d-none').html('').fadeOut();
-                                window.location.href = "{{ route('EventsBookViewPage') }}";
-                            }, 4000);
+                if (!row.find('.event').val()) {
+                    row.find('.eventerror').text('Event is required');
+                    isValid = false;
+                }
+
+                if (!row.find('.event_dates').val()) {
+                    row.find('.eventdateerror').text('Event date is required');
+                    isValid = false;
+                }
+
+                let qty = row.find('.qty').val();
+                if (!qty || qty <= 0) {
+                    row.find('.qtyerror').text('Quantity is required');
+                    isValid = false;
+                }
+                return isValid;
+            }
+
+            $(document).on('input change', '.customer, .event, .event_dates, .qty', function() {
+
+                let row = $(this).closest('.booking-row');
+
+                $(this).removeClass('is-invalid');
+
+                if ($(this).hasClass('event')) {
+                    row.find('.eventerror').text('');
+                }
+
+                if ($(this).hasClass('event_dates')) {
+                    row.find('.eventdateerror').text('');
+                }
+
+                if ($(this).hasClass('qty')) {
+                    row.find('.qtyerror').text('');
+                }
+            });
+
+            initDatePicker();
+
+            function calculateRow(row) {
+                let qty = parseFloat(row.find('.qty').val()) || 0;
+                let price = parseFloat(row.find('.price').val()) || 0;
+                let total = qty * price;
+
+                row.find('.total').val(total.toFixed(2));
+
+                calculatePriceTotal();
+                calculateGrandTotal();
+
+            }
+
+            function calculatePriceTotal() {
+                let priceTotal = 0;
+
+                $('.price').each(function() {
+                    priceTotal += parseFloat($(this).val()) || 0;
+                });
+
+                $('#total').val(priceTotal.toFixed(2));
+            }
+
+            function calculateGrandTotal() {
+                let grandtotal = 0;
+
+                $('.total').each(function() {
+                    grandtotal += parseFloat($(this).val()) || 0;
+                });
+
+                $('#grandtotal').val(grandtotal.toFixed(2));
+            }
+
+
+            $(document).on('input', '.qty, .price', function() {
+                let row = $(this).closest('.booking-row');
+                calculateRow(row);
+            });
+
+            $(document).on('change', '.event', function() {
+                let row = $(this).closest('.booking-row');
+                let price = $(this).find(':selected').data('price') || 0;
+                row.find('.price').val(price);
+                calculateRow(row);
+            });
+
+
+            function initDatePicker() {
+                flatpickr(".event_dates", {
+                    mode: "multiple",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 2) {
+                            selectedDates.pop();
+                            instance.setDate(selectedDates);
+                            return;
                         }
-                        $('#updatebook')[0].reset();
-                        $(".error").empty();
-                    }, function(error) {
-                        
-                            }
-                    );
 
+                        if (selectedDates.length === 2) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            const sortedDates = [...selectedDates].sort((a, b) => a - b);
+                            const endDate = sortedDates[1];
+
+                            if (endDate.getTime() === today.getTime()) {
+                                alert("End date cannot be today. Please select a later date.");
+                                selectedDates.splice(selectedDates.indexOf(endDate), 1);
+                                instance.setDate(selectedDates);
+                            }
+                        }
+                    }
+                });
+            }
+
+            $(document).on('click', '#add', function() {
+                let lastRow = $('.booking-row').last();
+                if (!validateRow(lastRow)) {
+                    return;
+                }
+                $('#table').append(`
+                        <tr class="booking-row">
+                            <td>
+                                <select class="form-control event" name="event[]">
+                                                <option value="">Select Event....</option>
+                                                @foreach ($event as $item)
+                                                    <option value="{{ $item->id }}" data-price="{{ $item->price }}">
+                                                        {{ $item->title }}</option>
+                                                @endforeach
+                                            </select>
+                                                <span class="text-danger error eventerror" ></span>
+
+                            </td>
+
+                            <td>
+                                <input type="text" name="eventdate[]" class="form-control event_dates" placeholder="Select dates">
+                                                <span class="text-danger error eventdateerror"></span>
+
+                            </td>
+
+                            <td>
+                                <input type="number" name="qty[]" class="form-control qty" value="1">
+                                  <span class="text-danger error qtyerror" ></span>
+                            </td>
+
+                            <td>
+                                <input type="number" name="price[]" class="form-control price" readonly>
+                                 <span class="text-danger error priceerror" ></span>
+
+                            </td>
+
+                            <td>
+                                <input type="text" name="total[]" class="form-control total" readonly>
+                            </td>
+
+                            <td>
+                                <i class="mdi mdi-minus-circle-outline mdi-24px sub"></i>
+                            </td>
+                        </tr>
+                        `);
+
+                initDatePicker();
+            });
+
+            $(document).on('click', '.sub', function() {
+                $(this).closest('tr').remove();
+                calculatePriceTotal();
+                calculateGrandTotal();
+            });
+
+            $('#addform').submit(function(e) {
+                e.preventDefault();
+                var Data = $('#addform')[0];
+                var formData = new FormData(Data);
+                console.log(formData);
+                var url = "{{ route('EventsStorePage') }}";
+                $('.error').text('');
+                $('.customererror').text('');
+                reusableAjaxCall(url, 'POST', formData, function(response) {
+                    console.log(response.message);
+                    if (response.status == true) {
+                        $('#message').removeClass('d-none').html(response.message)
+                            .fadeIn();
+                        setTimeout(function() {
+                            $('#message').addClass('d-none').html('').fadeOut();
+                            window.location.href =
+                                "{{ route('EventsBookViewPage') }}";
+                        }, 4000);
+                    }
+                    $('#addform')[0].reset();
+                    $(".error").empty();
+
+                }, function(error) {
+                    if (error.status !== 422) return;
+                    let errors = error.responseJSON.errors;
+                    $('.error').text('');
+                    $('.customererror').text('');
+                    for (let key in errors) {
+                        let [field, index] = key.split('.');
+                        $('.booking-row')
+                            .eq(index)
+                            .find('.' + field + 'error')
+                            .text(errors[key][0]);
+                    }
                 });
             });
-        </script>
-    @endsection
+        });
+    </script>
+@endsection

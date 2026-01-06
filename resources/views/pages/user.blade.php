@@ -11,8 +11,8 @@
                 </h3>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Event</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">View Event</li>
+                        <li class="breadcrumb-item"><a href="#">User</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">View User</li>
                     </ol>
                 </nav>
             </div>
@@ -20,20 +20,12 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body">
-                        @if (Auth::user()->role == 1)
                             <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
                                 <!-- Title -->
-                                <h4 class=" fw-bold text-dark">Manage Event Data</h4>
-                                <div class="d-flex">
-                                    <a href="{{ route('EventAddPage') }}" class="btn btn-primary btn-sm shadow-sm">
-                                        <i class="mdi mdi-plus"></i> Add New Record
-                                    </a>
-                                </div>
+                                <h4 class=" fw-bold text-dark">Manage User Data</h4>      
                             </div>
-                        @else
-                        @endif
                         <br>
-                     <table class="table table-hover rounded-table" id="myTable">
+                     <table class="table  table-hover " id="myTable">
 
                             <thead>
                                 <tr>
@@ -42,20 +34,12 @@
                                     </th>
 
                                     <th>
-                                        Title
+                                        Name
                                     </th>
                                     <th>
-                                        Category
+                                        Email
                                     </th>
-                                    <th>
-                                        City
-                                    </th>
-                                    <th>
-                                        Capacity
-                                    </th>
-                                    <th>
-                                        Price
-                                    </th>
+                                 
                                     <th>
                                         Action
                                     </th>
@@ -63,43 +47,22 @@
                             </thead>
                             <tbody>
 
-                                @foreach ($event as $item)
-                                    <tr class="text-capitalize">
+                                @foreach ($user as $item)
+                                    <tr>
                                         <td class="py-1">
-                                            @php
-                                                $images = json_decode($item->image, true);
-
-                                            @endphp
-                                            @if (is_array($images) && count($images) > 0)
-                                                @php
-                                                    $firstImage = $images[0];
-                                                @endphp
-                                                <img src="{{ asset('/storage/' . $firstImage) }}">
-                                            @endif
+                                           
+                                                <img src="{{ asset('/storage/user/' . $item->image) }}">
+                                           
                                         </td>
 
-                                        <td>
-                                            {{ $item->title }}
+                                        <td class="text-capitalize">
+                                            {{ $item->name }}
                                         </td>
                                         <td>
-                                            {{ $item->getcategory->category_name }}
+                                            {{ $item->email }}
                                         </td>
-                                        <td>
-                                            {{ $item->getcity->city_name }}
-                                        </td>
-                                        <td>
-                                            {{ $item->capacity }}
-                                        </td>
-                                        <td>
-                                            {{ $item->price }}
-                                        </td>
-                                            <td>&nbsp;&nbsp;&nbsp;
-                                                <a href="{{ route('EventDetailPage', $item->id) }}"
-                                                    class=" text-decoration-none "><i class="mdi mdi-eye mdi-24px color-black"></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
-                                                <a href="{{ route('EditEventPage', $item->id) }}"
-                                                    class=" text-decoration-none  text-dark"><i class="mdi mdi-pencil-box mdi-24px"></i>
-                                                </a>&nbsp;&nbsp;&nbsp;
+                                      
+                                            <td>
                                                 <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
                                                     data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del mdi-24px"></i>
                                                 </a>
@@ -197,7 +160,7 @@
                     e.preventDefault();
                     var id = $(this).closest('a').data('id');
                     var obj = $(this);
-                    var url = "/events-delete/" + id;
+                    var url = "/user-delete/" + id;
                     swal({
                             title: "Are you sure?",
                             text: "Once deleted, you will not be able to recover this imaginary file!",
@@ -228,34 +191,8 @@
                         });
                 });
 
-                $('.open-model').on('click', function() {
-                    var id = $(this).data('id');
-                    $('#event_id').val(id);
-                });
+              
 
-
-                $('#modelform').on('submit', function(e) {
-                    e.preventDefault();
-                     var data = $('#modelform')[0];
-                    var formData = new FormData(data);
-                    var url = "/event-book";
-                    $('.error').text('');
-
-                    reusableAjaxCall(url, 'POST', formData, function(response) {
-                        console.log(response);
-                        if (response.status == true) {
-                            $('#message').removeClass('d-none').html(response.message).fadeIn();
-                            setTimeout(function() {
-                                $('#message').addClass('d-none').html('').fadeOut();
-                                window.location.href = "{{ route('EventViewPage') }}";
-                            }, 4000);
-                        }
-                        $('#modelform')[0].reset();
-                        $('.error').empty();
-                    }, function(error) {
-                        console.log(error);
-                    });
-                })
             });
         </script>
     @endsection

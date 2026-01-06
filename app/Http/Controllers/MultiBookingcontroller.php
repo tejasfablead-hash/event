@@ -13,7 +13,8 @@ class MultiBookingcontroller extends Controller
     public function view()
     {
         $book = Booking::latest()->get();
-        return view('book.view', compact('book'));
+        $event = Event::pluck('title','id');
+        return view('book.view', compact('book','event'));
     }
 
     public function index()
@@ -22,17 +23,13 @@ class MultiBookingcontroller extends Controller
         $event = Event::all();
         return view('book.insert', compact(['customer', 'event']));
     }
-
     public function store(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'customer'  => 'required',
-            'event.*'     => 'required',
-            'eventdate.*' => 'required',
-            'qty.*'       => 'required|numeric|min:1',
-            'price.*'=>'required'
-
+            'customer'      => 'required',
+            'event.*'       => 'required',
+            'eventdate.*'   => 'required',
+            'qty.*'         => 'required|numeric|min:1',
         ], [
             'event.*.required'     => 'Event is required',
             'eventdate.*.required' => 'Event date is required',
@@ -45,28 +42,23 @@ class MultiBookingcontroller extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-
-        foreach ($request->event as $key => $value) {
-
-            $startdate = null;
-            $enddate = null;
-
-            if (!empty($request->eventdate[$key])) {
-                $dates = explode(',', $request->eventdate[$key]);
-                $startdate = $dates[0] ?? null;
-                $enddate = $dates[1] ?? $startdate;
-            }
-
-            Booking::create([
-                'customer'   => $request->customer,
-                'event'      => $request->event[$key],
-                'start_date' => $startdate,
-                'end_date'   => $enddate,
-                'qty'        => $request->qty[$key],
-                'total'=>$request->price[$key],
-                'grandtotal'=>$request->total[$key]
-            ]);
+        $startDate = [];
+        $endDate   = [];
+        foreach ($request->eventdate as $dateRange) {
+            $dates = explode(',', $dateRange);
+            $startDate[] = trim($dates[0]);
+            $endDate[]   = trim($dates[1] ?? $dates[0]);
         }
+        Booking::create([
+            'customer'    => $request->customer,
+            'event'       => $request->event,        // array
+            'start_date'  => $startDate,             // array
+            'end_date'    => $endDate,               // array
+            'qty'         => $request->qty,            // array
+            'status'      => 'pending',       // array
+            'total'       => $request->price,          // array
+            'grand_total' => $request->grandtotal[0],  // single value
+        ]);
 
         return response()->json([
             'status' => true,
@@ -74,6 +66,49 @@ class MultiBookingcontroller extends Controller
         ]);
     }
 
+    public function edit($id)
+    {
+        $event = Event::all();
+        $single = Booking::where('id', $id)->first();
+        return view('book.update', compact(['event', 'single']));
+    }
+    public function update(Request $request)
+    {
+        $data = Booking::where('id', $request->id)->first();
+
+        $validate = Validator::make($request->all(), [
+            'status' => 'required',
+            'event' => 'required',
+            'qty' => 'required',
+        ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validate->errors(),
+            ], 422);
+        }
+        $result = $data->update([
+            'event' => $request->event,
+            'start_date' => $request->startdate,
+            'end_date' => $request->enddate,
+            'qty'    => $request->qty,
+            'status' => $request->status,
+            'total' => $request->total,
+            'grandtotal' => $request->grandtotal
+        ]);
+        if ($result) {
+            return response()->json([
+                'status' => true,
+                'message' => ' Booking  Updated Successfully',
+                'data' => $result
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => ' Booking  Not Update.'
+            ]);
+        }
+    }
     public function delete($id)
     {
         $data = Booking::where('id', $id)->first();
@@ -89,48 +124,9 @@ class MultiBookingcontroller extends Controller
             'message' => 'Record Deleted Successfully'
         ]);
     }
-
-
-    public function edit($id)
-    {
-        $event = Event::all();
-        $single = Booking::where('id', $id)->first();
-        return view('book.update', compact(['event', 'single']));
-    }
-    public function update(Request $request)
-    {
-
-
-        $data = Booking::where('id', $request->id)->first();
-
-        $validate = Validator::make($request->all(), [
-            'status' => 'required',
-            'event' => 'required',
-            'qty' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validate->errors(),
-            ], 422);
-        }
-
-        $result = $data->update([
-            'event' => $request->event,
-            'qty'    => $request->qty,
-            'status' => $request->status
-        ]);
-        if ($result) {
-            return response()->json([
-                'status' => true,
-                'message' => ' Booking  Updated Successfully',
-                'data' => $result
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => ' Booking  Not Update.'
-            ]);
-        }
+    public function bookdetail($id){
+        $data = Booking::where('id',$id)->first();
+         $event = Event::pluck('title','id');
+        return view('book.bookingdetails',compact('data','event'));
     }
 }

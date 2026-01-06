@@ -21,6 +21,12 @@
              </a>
          </li>
          <li class="nav-item">
+             <a class="nav-link" href="{{ route('UsersPage') }}">
+                 <span class="menu-title">Customer</span>
+                 <i class="mdi mdi-account-circle menu-icon"></i>
+             </a>
+         </li>
+         <li class="nav-item">
              <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
                  <span class="menu-title">Event</span>
                  <i class="menu-arrow"></i>

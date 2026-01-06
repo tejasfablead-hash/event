@@ -1,7 +1,7 @@
   <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo" href="#"><img src="{{asset('images/new.png')}}"class="w-50 h-50"  alt="Home"/></a>
-        <a class="navbar-brand brand-logo-mini" href="#"><img src="{{ asset('images/event.jpg') }}" class="img-fluid rounded">
+        <a class="navbar-brand brand-logo" href="{{ route('DashboardPage') }}"><img src="{{asset('images/new.png')}}"class="w-50 h-50"  alt="Home"/></a>
+        <a class="navbar-brand brand-logo-mini" href="{{ route('DashboardPage') }}"><img src="{{ asset('images/event.jpg') }}" class="img-fluid rounded">
 </a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-stretch">
@@ -11,7 +11,7 @@
               <div class="input-group-prepend bg-transparent">
                   <i class="input-group-text border-0 mdi mdi-magnify"></i>                
               </div>
-              <input type="text" class="form-control bg-transparent border-0" placeholder="Search projects">
+              <input type="text" class="form-control bg-transparent border-0" placeholder="Search event...">
             </div>
           </form>
         </div>

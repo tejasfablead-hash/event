@@ -7,7 +7,6 @@
             gap: 12px;
         }
 
-        /* Switch container */
         .switch {
             position: relative;
             display: inline-block;
@@ -15,14 +14,12 @@
             height: 24px;
         }
 
-        /* Hide checkbox */
         .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
 
-        /* Slider */
         .slider {
             position: absolute;
             cursor: pointer;
@@ -32,7 +29,6 @@
             border-radius: 30px;
         }
 
-        /* Circle */
         .slider:before {
             position: absolute;
             content: "";
@@ -45,20 +41,24 @@
             border-radius: 50%;
         }
 
-        /* ON state */
         input:checked+.slider {
             background-color: #4f46e5;
-            /* Indigo */
+           
         }
 
         input:checked+.slider:before {
             transform: translateX(22px);
         }
 
-        /* Label */
         .gst-label {
             font-weight: 600;
             font-size: 14px;
+        }
+
+        .table,
+        tr {
+            border: 1px solid black;
+            border-radius: 10px;
         }
     </style>
     <div class="main-panel">
@@ -96,10 +96,10 @@
                             </div>
                             <br>
 
-                            <div class="row">
-                                <table id="table" class="table 
-                            table-bordered">
-                                    <thead class="thead-dark">
+                            <div class="row ">
+                                <table id="table" class="table  
+                            table-bordered rounded">
+                                    <thead class="thead-dark  ">
                                         <tr>
                                             <th>Event</th>
                                             <th>Select Date</th>
@@ -148,7 +148,7 @@
                                     </tbody>
 
                                 </table>
-                                <div class="row mt-3">
+                                <div class="row mt-2">
                                     <div class="col-md-1">
                                         <input type="submit" name="submit" class="btn btn-gradient-primary mr-2"
                                             value="Submit">
@@ -157,169 +157,164 @@
                                 </div>
                             </div>
 
-
-                    </div>
-
-                    <div class="row mt-1 mb-3 d-flex justifly-content-space-between">
-                        <div class="col-md-7"></div>
-                        <div class="col-md-5">
-                            <div class="row "><b class="mt-2"> Total :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>
-                                <div class="col-md-9"> <input type="text" class="form-control" value="0.00" readonly
-                                        id="total">
+                            <div class="row mt-1 mb-1 d-flex justifly-content-space-between">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-5">
+                                    <div class="row "><b class="mt-2"> Total :
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>
+                                        <div class="col-md-9"> <input type="text" class="form-control" value="0.00"
+                                                readonly id="total">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row mt-1 mb-3 d-flex justifly-content-space-between">
-                        <div class="col-md-7"></div>
-                        <div class="col-md-5">
-                            <div class="row "><b class="mt-2">Grand Total : </b>
-                                <div class="col-md-9"> <input type="text" name="grandtotal[]" class="form-control"
-                                        value="0.00" readonly id="grandtotal">
+                            <div class="row mt-3 mb-1 d-flex justifly-content-space-between">
+                                <div class="col-md-7"></div>
+                                <div class="col-md-5">
+                                    <div class="row "><b class="mt-2">Grand Total : </b>
+                                        <div class="col-md-9"> <input type="text" name="grandtotal[]"
+                                                class="form-control" value="0.00" readonly id="grandtotal">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
+    <script src="{{ asset('ajax.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        $(document).ready(function() {
 
-        <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
-        <script src="{{ asset('ajax.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <script>
-            $(document).ready(function() {
+            function validateRow(row) {
+                let isValid = true;
 
-                function validateRow(row) {
-                    let isValid = true;
-
-                    if (!row.find('.event').val()) {
-                        row.find('.eventerror').text('Event is required');
-                        isValid = false;
-                    }
-
-                    if (!row.find('.event_dates').val()) {
-                        row.find('.eventdateerror').text('Event date is required');
-                        isValid = false;
-                    }
-
-                    let qty = row.find('.qty').val();
-                    if (!qty || qty <= 0) {
-                        row.find('.qtyerror').text('Quantity is required');
-                        isValid = false;
-                    }
-                    return isValid;
+                if (!row.find('.event').val()) {
+                    row.find('.eventerror').text('Event is required');
+                    isValid = false;
                 }
 
-                $(document).on('input change', '.customer, .event, .event_dates, .qty', function() {
+                if (!row.find('.event_dates').val()) {
+                    row.find('.eventdateerror').text('Event date is required');
+                    isValid = false;
+                }
 
-                    let row = $(this).closest('.booking-row');
+                let qty = row.find('.qty').val();
+                if (!qty || qty <= 0) {
+                    row.find('.qtyerror').text('Quantity is required');
+                    isValid = false;
+                }
+                return isValid;
+            }
 
-                    $(this).removeClass('is-invalid');
+            $(document).on('input change', '.customer, .event, .event_dates, .qty', function() {
 
-                    if ($(this).hasClass('customer')) {
-                        row.find('.customererror').text('');
-                    }
+                let row = $(this).closest('.booking-row');
 
-                    if ($(this).hasClass('event')) {
-                        row.find('.eventerror').text('');
-                    }
+                $(this).removeClass('is-invalid');
 
-                    if ($(this).hasClass('event_dates')) {
-                        row.find('.eventdateerror').text('');
-                    }
+                if ($(this).hasClass('event')) {
+                    row.find('.eventerror').text('');
+                }
 
-                    if ($(this).hasClass('qty')) {
-                        row.find('.qtyerror').text('');
-                    }
+                if ($(this).hasClass('event_dates')) {
+                    row.find('.eventdateerror').text('');
+                }
+
+                if ($(this).hasClass('qty')) {
+                    row.find('.qtyerror').text('');
+                }
+            });
+
+            initDatePicker();
+
+            function calculateRow(row) {
+                let qty = parseFloat(row.find('.qty').val()) || 0;
+                let price = parseFloat(row.find('.price').val()) || 0;
+                let total = qty * price;
+
+                row.find('.total').val(total.toFixed(2));
+
+                calculatePriceTotal();
+                calculateGrandTotal();
+
+            }
+
+            function calculatePriceTotal() {
+                let priceTotal = 0;
+
+                $('.price').each(function() {
+                    priceTotal += parseFloat($(this).val()) || 0;
                 });
 
-                initDatePicker();
+                $('#total').val(priceTotal.toFixed(2));
+            }
 
-                function calculateRow(row) {
-                    let qty = parseFloat(row.find('.qty').val()) || 0;
-                    let price = parseFloat(row.find('.price').val()) || 0;
-                    let total = qty * price;
+            function calculateGrandTotal() {
+                let grandtotal = 0;
 
-                    row.find('.total').val(total.toFixed(2));
-
-                    calculatePriceTotal();
-                    calculateGrandTotal();
-
-                }
-
-                function calculatePriceTotal() {
-                    let priceTotal = 0;
-
-                    $('.price').each(function() {
-                        priceTotal += parseFloat($(this).val()) || 0;
-                    });
-
-                    $('#total').val(priceTotal.toFixed(2));
-                }
-
-                function calculateGrandTotal() {
-                    let grandtotal = 0;
-
-                    $('.total').each(function() {
-                        grandtotal += parseFloat($(this).val()) || 0;
-                    });
-
-                    $('#grandtotal').val(grandtotal.toFixed(2));
-                }
-
-
-                $(document).on('input', '.qty, .price', function() {
-                    let row = $(this).closest('.booking-row');
-                    calculateRow(row);
+                $('.total').each(function() {
+                    grandtotal += parseFloat($(this).val()) || 0;
                 });
 
-                $(document).on('change', '.event', function() {
-                    let row = $(this).closest('.booking-row');
-                    let price = $(this).find(':selected').data('price') || 0;
-                    row.find('.price').val(price);
-                    calculateRow(row);
-                });
+                $('#grandtotal').val(grandtotal.toFixed(2));
+            }
 
 
-                function initDatePicker() {
-                    flatpickr(".event_dates", {
-                        mode: "multiple",
-                        dateFormat: "Y-m-d",
-                        minDate: "today",
-                        onChange: function(selectedDates, dateStr, instance) {
-                            if (selectedDates.length > 2) {
-                                selectedDates.pop();
+            $(document).on('input', '.qty, .price', function() {
+                let row = $(this).closest('.booking-row');
+                calculateRow(row);
+            });
+
+            $(document).on('change', '.event', function() {
+                let row = $(this).closest('.booking-row');
+                let price = $(this).find(':selected').data('price') || 0;
+                row.find('.price').val(price);
+                calculateRow(row);
+            });
+
+
+            function initDatePicker() {
+                flatpickr(".event_dates", {
+                    mode: "range",
+                    dateFormat: "Y-m-d",
+                    minDate: "today",
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 2) {
+                            selectedDates.pop();
+                            instance.setDate(selectedDates);
+                            return;
+                        }
+
+                        if (selectedDates.length === 2) {
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+
+                            const sortedDates = [...selectedDates].sort((a, b) => a - b);
+                            const endDate = sortedDates[1];
+
+                            if (endDate.getTime() === today.getTime()) {
+                                alert("End date cannot be today. Please select a later date.");
+                                selectedDates.splice(selectedDates.indexOf(endDate), 1);
                                 instance.setDate(selectedDates);
-                                return;
-                            }
-
-                            if (selectedDates.length === 2) {
-                                const today = new Date();
-                                today.setHours(0, 0, 0, 0);
-
-                                const sortedDates = [...selectedDates].sort((a, b) => a - b);
-                                const endDate = sortedDates[1];
-
-                                if (endDate.getTime() === today.getTime()) {
-                                    alert("End date cannot be today. Please select a later date.");
-                                    selectedDates.splice(selectedDates.indexOf(endDate), 1);
-                                    instance.setDate(selectedDates);
-                                }
                             }
                         }
-                    });
-                }
-
-                $(document).on('click', '#add', function() {
-                    let lastRow = $('.booking-row').last();
-                    if (!validateRow(lastRow)) {
-                        return;
                     }
-                    $('#table').append(`
+                });
+            }
+
+            $(document).on('click', '#add', function() {
+                let lastRow = $('.booking-row').last();
+                if (!validateRow(lastRow)) {
+                    return;
+                }
+                $('#table').append(`
                         <tr class="booking-row">
                             <td>
                                 <select class="form-control event" name="event[]">
@@ -360,51 +355,51 @@
                         </tr>
                         `);
 
-                    initDatePicker();
-                });
+                initDatePicker();
+            });
 
-                $(document).on('click', '.sub', function() {
-                    $(this).closest('tr').remove();
-                    calculatePriceTotal();
-                    calculateGrandTotal();
-                });
+            $(document).on('click', '.sub', function() {
+                $(this).closest('tr').remove();
+                calculatePriceTotal();
+                calculateGrandTotal();
+            });
 
-                $('#addform').submit(function(e) {
-                    e.preventDefault();
-                    var Data = $('#addform')[0];
-                    var formData = new FormData(Data);
-                    console.log(formData);
-                    var url = "{{ route('EventsStorePage') }}";
+            $('#addform').submit(function(e) {
+                e.preventDefault();
+                var Data = $('#addform')[0];
+                var formData = new FormData(Data);
+                console.log(formData);
+                var url = "{{ route('EventsStorePage') }}";
+                $('.error').text('');
+                $('.customererror').text('');
+                reusableAjaxCall(url, 'POST', formData, function(response) {
+                    console.log(response.message);
+                    if (response.status == true) {
+                        $('#message').removeClass('d-none').html(response.message)
+                            .fadeIn();
+                        setTimeout(function() {
+                            $('#message').addClass('d-none').html('').fadeOut();
+                            window.location.href =
+                                "{{ route('EventsBookViewPage') }}";
+                        }, 4000);
+                    }
+                    $('#addform')[0].reset();
+                    $(".error").empty();
+
+                }, function(error) {
+                    if (error.status !== 422) return;
+                    let errors = error.responseJSON.errors;
                     $('.error').text('');
                     $('.customererror').text('');
-                    reusableAjaxCall(url, 'POST', formData, function(response) {
-                        console.log(response.message);
-                        if (response.status == true) {
-                            $('#message').removeClass('d-none').html(response.message)
-                                .fadeIn();
-                            setTimeout(function() {
-                                $('#message').addClass('d-none').html('').fadeOut();
-                                window.location.href =
-                                    "{{ route('EventsBookViewPage') }}";
-                            }, 4000);
-                        }
-                        $('#addform')[0].reset();
-                        $(".error").empty();
-
-                    }, function(error) {
-                        if (error.status !== 422) return;
-                        let errors = error.responseJSON.errors;
-                        $('.error').text('');
-                        $('.customererror').text('');
-                        for (let key in errors) {
-                            let [field, index] = key.split('.');
-                            $('.booking-row')
-                                .eq(index)
-                                .find('.' + field + 'error')
-                                .text(errors[key][0]);
-                        }
-                    });
+                    for (let key in errors) {
+                        let [field, index] = key.split('.');
+                        $('.booking-row')
+                            .eq(index)
+                            .find('.' + field + 'error')
+                            .text(errors[key][0]);
+                    }
                 });
             });
-        </script>
-    @endsection
+        });
+    </script>
+@endsection
