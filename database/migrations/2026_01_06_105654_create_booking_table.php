@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('booking', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer')->nullable();
-            $table->unsignedBigInteger('event')->nullable();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->string('qty');
-            $table->enum('status', ['cancelled', 'confirmed', 'pending'])->default('pending');
+            $table->unsignedBigInteger('customer');
+            $table->json('event');
+            $table->json('start_date');
+            $table->json('end_date');
+            $table->json('qty');
+            $table->json('total');
+            $table->enum('status', ['pending', 'confirmed', 'cancelled'])->default('pending');
+            $table->decimal('grand_total', 10, 2);
             $table->foreign('customer')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('event')->references('id')->on('event')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -59,6 +59,7 @@ class AuthController extends Controller
         return view('pages.login');
     }
 
+    
     public function match(Request $request)
     {
         $validate = Validator::make(
@@ -152,5 +153,30 @@ class AuthController extends Controller
             'message' => 'Profile Updated Successfully',
             'data' => $result
         ]);
+    }
+
+    public function user()
+    {
+        $user = User::all();
+        return view('pages.user', compact('user'));
+    }
+    public function delete($id)
+    {
+        $delete = User::where('id', $id)->first();
+        $delete->image;
+
+        if (!$delete) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Record Not Available'
+            ]);
+        }
+
+        Storage::disk('public')->delete('user/' . $delete->image);
+        $delete->delete();
+        return response()->json([
+            'status' => true,
+            'message' => 'Record Deleted Successfully'
+        ], 200);
     }
 }

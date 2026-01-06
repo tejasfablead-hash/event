@@ -38,6 +38,7 @@ class DashboardController extends Controller
                     'event'    => $row->getevent->title,
                     'qty'      => $row->qty,
                     'status'   => $row->status,
+                    'city'  =>$row->getevent->getcity->city_name
                 ],
 
                 'color' => $row->status === 'pending' ? '#f5c57eff' : '#b1ecb3ff',
