@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Event;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -14,39 +15,61 @@ class DashboardController extends Controller
         $customer = User::count();
         $event = Event::count();
         $book = Booking::count();
-        $pending = Booking::where('status','pending')->count();
-        return view('dashboard', compact('customer', 'event', 'book','pending'));
+        $pending = Booking::where('status', 'pending')->count();
+        return view('dashboard', compact('customer', 'event', 'book', 'pending'));
     }
 
-    public function event()
+    public function events()
     {
-        $bookings = Booking::with(['getcustomer', 'getevent'])->get();
-
+        $bookings = Booking::with('getcustomer')->get();
         $events = [];
 
-        foreach ($bookings as $row) {
-            $events[] = [
-                'id'    => $row->id,
-                'title' => $row->getevent->title . ' (' . $row->getcustomer->name . ')',
-                'start' => $row->start_date->format('Y-m-d'),
-                'end'   => $row->end_date
-                    ? $row->end_date->addDay()->format('Y-m-d')
-                    : $row->start_date->format('Y-m-d'),
+        foreach ($bookings as $booking) {
+           
+            $eventIds = (array) $booking->event;
+            $dates    = (array) $booking->start_date;
 
-                'extendedProps' => [
-                    'customer' => $row->getcustomer->name,
-                    'event'    => $row->getevent->title,
-                    'qty'      => $row->qty,
-                    'status'   => $row->status,
-                    'city'  =>$row->getevent->getcity->city_name
-                ],
+            foreach ($eventIds as $index => $eventId) {
 
-                'color' => $row->status === 'pending' ? '#f5c57eff' : '#b1ecb3ff',
-            ];
+                if (!isset($dates[$index])) {
+                    continue;
+                }
+
+                $eventModel = Event::find($eventId);
+                if (!$eventModel) continue;
+
+                $dateRange = $dates[$index];
+
+                if (str_contains($dateRange, 'to')) {
+                    [$start, $end] = array_map('trim', explode('to', $dateRange));
+                } else {
+                    $start = trim($dateRange);
+                    $end   = trim($dateRange);
+                }
+
+                $events[] = [
+                    'title' => $eventModel->title . ' (' . $booking->getcustomer->name. ')',
+                    'start' => $start,
+                    'end'   => date('Y-m-d', strtotime($end . ' +1 day')),
+
+                    'extendedProps' => [
+                        'customer' => $booking->getcustomer->name ?? 'N/A',
+                        'event'    => $eventModel->title,
+                        'qty' => $booking->qty[$index],
+                        'status'   => ucfirst($booking->status),
+                        'city'     => $booking->getevent->getcity->city_name ?? 'N/A',
+                    ],
+
+                    'backgroundColor' => $booking->status === 'confirmed'
+                        ? '#28a745'
+                        : '#ffc107',
+                    'borderColor' => '#ffffffff'
+                ];
+            }
         }
-
-
 
         return response()->json($events);
     }
+
+  
 }
