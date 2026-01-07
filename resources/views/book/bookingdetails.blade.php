@@ -110,7 +110,7 @@
                                     </div>
 
                                     <!-- ACTIONS -->
-                                    <a href="{{ route('EditEventPage', $data->id) }}" class="btn btn-gradient-info mt-3">
+                                    <a href="{{route('EventsMultiBookEditPage',$data->id)}}" class="btn btn-gradient-info mt-3">
                                         Edit Event
                                     </a>
                                     <a href="{{ route('EventsBookViewPage') }}"> <button class="btn btn-dark mt-3">

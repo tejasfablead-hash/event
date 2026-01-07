@@ -34,7 +34,6 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/logout', 'logout')->name('LogoutPage');
 });
 
-
 Route::controller(EventController::class)->group(function () {
     Route::get('/event', 'index')->name('EventAddPage');
     Route::post('/add-event', 'store')->name('EventStorePage');
@@ -44,7 +43,6 @@ Route::controller(EventController::class)->group(function () {
     Route::get('/event-details/{id}', 'eventdetail')->name('EventDetailPage');
     Route::get('/delete-events/{id}', 'delete')->name('DeleteEventPage');
 });
-
 
 Route::controller(Bookingcontroller::class)->group(function () {
     Route::post('/event-book', 'book')->name('EventsBookPage');
@@ -58,12 +56,13 @@ Route::controller(MultiBookingcontroller::class)->group(function () {
     Route::get('/edit-event-book/{id}', 'edit')->name('EventsMultiBookEditPage');
     Route::post('/update-eventbook', 'update')->name('EventsBooksUpdatePage');
     Route::get('/eventbook-view', 'view')->name('EventsBookViewPage');
-    Route::get('/delete-eventbook/{id}', 'delete')->name('EventsBookEditPage');
+    Route::get('/delete-eventbook/{id}', 'delete')->name('EventsBookdeletePage');
     Route::get('/eventbook-details/{id}', 'bookdetail')->name('EventsBookDetailPage');
 });
 
-
 Route::controller(DashboardController::class)->group(function () {
     Route::get('/dashboard', 'dashboard')->name('DashboardPage');
-    Route::get('/dashboard/event', 'event')->name('DashboardEventPage');
+    Route::get('/dashboard/event', 'events')->name('DashboardEventPage');
+
 });
+

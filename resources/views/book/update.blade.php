@@ -302,6 +302,11 @@
             border: 1px solid black;
             border-radius: 10px;
         }
+
+        .bordered-dark {
+            border: 1px solid #a39f9f;
+            border-radius: 6px;
+        }
     </style>
     <div class="main-panel">
         <div class="content-wrapper">
@@ -322,7 +327,7 @@
                         <h4 class="card-title">Update Booking</h4>
                         <br>
 
-                        <form class="form-sample" id="addform" enctype="multipart/form-data">
+                        <form class="form-sample" id="updateform" enctype="multipart/form-data">
                             @csrf
                             <div class="row">
                                 <div class="col-md-4">
@@ -330,9 +335,12 @@
                                     <input type="text" name="customer" class="form-control customer"
                                         placeholder="Select customer" value="{{ $single->getcustomer->name }}" readonly>
                                     <span class="text-danger error customererror" id="customer_error"></span>
+                                    <input type="hidden" name="id" class="form-control id" placeholder="Select id"
+                                        value="{{ $single->id }}" readonly>
                                 </div>
                             </div>
                             <br>
+
 
                             <div class="row ">
                                 <table id="table" class="table  
@@ -346,42 +354,69 @@
                                             <th colspan="2">Main Total</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr class="booking-row">
-                                            <td class="gap-2">
-                                                <select class="form-control event border-redius" name="event[]">
-                                                    <option value="">Select Event....</option>
-                                                    @foreach ($event as $item)
-                                                        <option value="{{ $item->id }}" data-price="{{ $item->price }}"
-                                                            {{ $item->id == $single->event ? 'selected' : '' }}>
-                                                            {{ $item->title }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <span class="text-danger error eventerror"></span>
-                                            </td>
-                                            <td>
-                                                <input type="text" name="eventdate[]" class="form-control event_dates"
-                                                    placeholder="Select dates">
-                                                <span class="text-danger error eventdateerror"></span>
-                                            </td>
+                                    @php
+                                        $events = $single->event ?? [];
+                                        $dates = $single->start_date ?? [];
+                                        $qtys = $single->qty ?? [];
+                                        $totals = $single->total ?? [];
 
-                                            <td>
-                                                <input type="number" name="qty[]" value="1" class="form-control qty"
-                                                    placeholder="enter qty">
-                                                <span class="text-danger error qtyerror"></span>
-                                            </td>
-                                            <td>
-                                                <input type="number" name="price[]" class="form-control price" readonly>
-                                                <span class="text-danger error priceerror"></span>
-                                            </td>
-                                            <td>
-                                                <input type="text" name="total[]" class="form-control total">
-                                                <span class="text-danger error totalerror"></span>
-                                            </td>
-                                            <td>
-                                                <i class="mdi mdi-plus-circle-outline mdi-24px" id="add"></i>
-                                            </td>
-                                        </tr>
+                                        $priceTotal = 0;
+                                        $grandTotal = 0;
+                                    @endphp
+                                    <tbody>
+                                        @foreach ($events as $key => $val)
+                                            @php
+                                                $price = $event->where('id', $val)->first()->price ?? 0;
+                                                $qty = $qtys[$key] ?? 0;
+                                                $rowTotal = $qty * $price;
+
+                                                $priceTotal += $price;
+                                                $grandTotal += $rowTotal;
+                                            @endphp
+                                            <tr class="booking-row">
+                                                <td class="gap-2">
+                                                    <select class="form-control event border-redius" name="event[]">
+                                                        <option value="">Select Event....</option>
+                                                        @foreach ($event as $item)
+                                                            <option value="{{ $item->id }}"
+                                                                data-price="{{ $item->price }}"
+                                                                {{ $item->id == $val ? 'selected' : '' }}>
+                                                                {{ $item->title }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <span class="text-danger error eventerror"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="eventdate[]"
+                                                        class="form-control event_dates" placeholder="Select dates"
+                                                        value="{{ $dates[$key] }}">
+                                                    <span class="text-danger error eventdateerror"></span>
+                                                </td>
+
+                                                <td>
+                                                    <input type="number" name="qty[]" class="form-control qty"
+                                                        value="{{ $qty }}" placeholder="enter qty">
+                                                    <span class="text-danger error qtyerror"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="number" name="price[]" value="{{ $price }}"
+                                                        class="form-control price" readonly>
+                                                    <span class="text-danger error priceerror"></span>
+                                                </td>
+                                                <td>
+                                                    <input type="text" name="total[]"
+                                                        value="{{ number_format($rowTotal) }}" class="form-control total">
+                                                    <span class="text-danger error totalerror"></span>
+                                                </td>
+                                                <td>
+                                                    @if ($key == 0)
+                                                        <i class="mdi mdi-plus-circle-outline mdi-24px" id="add"></i>
+                                                    @else
+                                                        <i class="mdi mdi-minus-circle-outline mdi-24px sub"></i>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
 
                                 </table>
@@ -393,29 +428,49 @@
 
                                 </div>
                             </div>
+                            <div class="row mt-3 mb-2 justify-content-end">
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 30%;">Discount (%)</div>
+                                        <!-- Inputs -->
+                                        <div class="d-flex gap-2" style="width: 70%;">
+                                            <input type="text" class="form-control bordered-dark" id="discount"
+                                                placeholder="%" style="width: 30%;">&nbsp;
+                                            <input type="text" class="form-control bordered-dark" id="totaldiscount"
+                                                placeholder="Amount" style="width: 70%;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <div class="row mt-1 mb-1 d-flex justifly-content-space-between">
-                                <div class="col-md-7"></div>
+                            <div class="row mb-3 justify-content-end">
                                 <div class="col-md-5">
-                                    <div class="row "><b class="mt-2"> Total :
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>
-                                        <div class="col-md-9"> <input type="text" class="form-control" value="0.00"
-                                                readonly id="total">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 30%;">Grand Total</div>
+                                        <!-- Input -->
+                                        <div style="width: 70%;">
+                                            <input type="text" name="grandtotal[]" class="form-control"
+                                                value="{{ number_format($grandTotal) }}" readonly id="grandtotal">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-3 mb-1 d-flex justifly-content-space-between">
-                                <div class="col-md-7"></div>
+                            <div class="row mb-3 justify-content-end">
                                 <div class="col-md-5">
-                                    <div class="row "><b class="mt-2">Grand Total : </b>
-                                        <div class="col-md-9"> <input type="text" name="grandtotal[]"
-                                                class="form-control" value="0.00" readonly id="grandtotal">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 90%;"></div>
+                                        <div style="width:20%;">
+                                            <button type="button" id="cancel" class="btn btn-sm btn-gradient-dark">
+                                                Cancel
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -471,18 +526,6 @@
 
             initDatePicker();
 
-            function calculateRow(row) {
-                let qty = parseFloat(row.find('.qty').val()) || 0;
-                let price = parseFloat(row.find('.price').val()) || 0;
-                let total = qty * price;
-
-                row.find('.total').val(total.toFixed(2));
-
-                calculatePriceTotal();
-                calculateGrandTotal();
-
-            }
-
             function calculatePriceTotal() {
                 let priceTotal = 0;
 
@@ -494,20 +537,69 @@
             }
 
             function calculateGrandTotal() {
-                let grandtotal = 0;
+                let totalSum = 0;
 
                 $('.total').each(function() {
-                    grandtotal += parseFloat($(this).val()) || 0;
+                    let val = parseFloat($(this).val()) || 0;
+                    totalSum += val;
                 });
 
-                $('#grandtotal').val(grandtotal.toFixed(2));
+                let discountAmount = parseFloat($('#totaldiscount').val()) || 0;
+
+                let grandTotal = totalSum - discountAmount;
+                if (grandTotal < 0) grandTotal = 0;
+
+                $('#grandtotal').val(grandTotal.toFixed(2));
             }
 
+            function calculateDiscountFromPercent() {
+                let totalSum = 0;
+                $('.total').each(function() {
+                    totalSum += parseFloat($(this).val()) || 0;
+                });
+
+                let discountPercent = parseFloat($('#discount').val()) || 0;
+                let discountAmount = (totalSum * discountPercent) / 100;
+
+                $('#totaldiscount').val(discountAmount.toFixed(2));
+                calculateGrandTotal();
+            }
+
+            function calculateDiscountFromAmount() {
+                let totalSum = 0;
+                $('.total').each(function() {
+                    totalSum += parseFloat($(this).val()) || 0;
+                });
+
+                let discountAmount = parseFloat($('#totaldiscount').val()) || 0;
+                let discountPercent = totalSum > 0 ? (discountAmount / totalSum) * 100 : 0;
+
+                $('#discount').val(discountPercent.toFixed(2));
+                calculateGrandTotal();
+            }
+
+            $(document).on('input', '#discount', function() {
+                calculateDiscountFromPercent();
+            });
+
+            $(document).on('input', '#totaldiscount', function() {
+                calculateDiscountFromAmount();
+            });
 
             $(document).on('input', '.qty, .price', function() {
                 let row = $(this).closest('.booking-row');
                 calculateRow(row);
             });
+
+            function calculateRow(row) {
+                let qty = parseFloat(row.find('.qty').val()) || 0;
+                let price = parseFloat(row.find('.price').val()) || 0;
+                let total = qty * price;
+
+                row.find('.total').val(total.toFixed(2));
+
+                calculateDiscountFromPercent();
+            }
 
             $(document).on('change', '.event', function() {
                 let row = $(this).closest('.booking-row');
@@ -522,7 +614,9 @@
                     mode: "multiple",
                     dateFormat: "Y-m-d",
                     minDate: "today",
+
                     onChange: function(selectedDates, dateStr, instance) {
+
                         if (selectedDates.length > 2) {
                             selectedDates.pop();
                             instance.setDate(selectedDates);
@@ -530,17 +624,27 @@
                         }
 
                         if (selectedDates.length === 2) {
+
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
 
-                            const sortedDates = [...selectedDates].sort((a, b) => a - b);
+                            const sortedDates = selectedDates.sort((a, b) => a - b);
+                            const startDate = sortedDates[0];
                             const endDate = sortedDates[1];
 
                             if (endDate.getTime() === today.getTime()) {
-                                alert("End date cannot be today. Please select a later date.");
-                                selectedDates.splice(selectedDates.indexOf(endDate), 1);
-                                instance.setDate(selectedDates);
+                                alert("End date must be after today.");
+                                instance.setDate([startDate]);
+                                return;
                             }
+
+                            if (endDate <= startDate) {
+                                alert("End date must be after start date.");
+                                instance.setDate([startDate]);
+                                return;
+                            }
+
+                            instance.setDate(sortedDates);
                         }
                     }
                 });
@@ -600,13 +704,28 @@
                 calculatePriceTotal();
                 calculateGrandTotal();
             });
+            $('.booking-row').each(function() {
+                calculateRow($(this));
+            });
 
-            $('#addform').submit(function(e) {
+            $(document).on('click', '#cancel', function() {
+
+                $('#discount').val(0);
+                $('#totaldiscount').val(0);
+
+                let totalRowSum = 0;
+                $('.total').each(function() {
+                    totalRowSum += parseFloat($(this).val()) || 0;
+                });
+
+                $('#grandtotal').val(totalRowSum.toFixed(2));
+            });
+            $('#updateform').submit(function(e) {
                 e.preventDefault();
-                var Data = $('#addform')[0];
+                var Data = $('#updateform')[0];
                 var formData = new FormData(Data);
                 console.log(formData);
-                var url = "{{ route('EventsStorePage') }}";
+                var url = "{{ route('EventsBooksUpdatePage') }}";
                 $('.error').text('');
                 $('.customererror').text('');
                 reusableAjaxCall(url, 'POST', formData, function(response) {
@@ -620,7 +739,7 @@
                                 "{{ route('EventsBookViewPage') }}";
                         }, 4000);
                     }
-                    $('#addform')[0].reset();
+                    $('#updateform')[0].reset();
                     $(".error").empty();
 
                 }, function(error) {

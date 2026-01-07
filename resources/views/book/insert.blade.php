@@ -1,64 +1,9 @@
 @extends('index')
 @section('container')
     <style>
-        .gst-toggle {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background-color: #d1d5db;
-            transition: 0.3s;
-            border-radius: 30px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-
-        input:checked+.slider {
-            background-color: #4f46e5;
-           
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(22px);
-        }
-
-        .gst-label {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .table,
-        tr {
-            border: 1px solid black;
-            border-radius: 10px;
+        .bordered-dark {
+            border: 1px solid #a39f9f;
+            border-radius: 6px;
         }
     </style>
     <div class="main-panel">
@@ -99,7 +44,7 @@
                             <div class="row ">
                                 <table id="table" class="table  
                             table-bordered rounded">
-                                    <thead class="thead-dark  ">
+                                    <thead class="thead-dark  bordered-dark">
                                         <tr>
                                             <th>Event</th>
                                             <th>Select Date</th>
@@ -108,8 +53,8 @@
                                             <th colspan="2">Main Total</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr class="booking-row">
+                                    <tbody class="bordered-dark">
+                                        <tr class="booking-row bordered-dark">
 
                                             <td class="gap-2">
                                                 <select class="form-control event border-redius" name="event[]">
@@ -156,25 +101,45 @@
 
                                 </div>
                             </div>
-
-                            <div class="row mt-1 mb-1 d-flex justifly-content-space-between">
-                                <div class="col-md-7"></div>
+                            <div class="row mt-3 mb-2 justify-content-end">
                                 <div class="col-md-5">
-                                    <div class="row "><b class="mt-2"> Total :
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </b>
-                                        <div class="col-md-9"> <input type="text" class="form-control" value="0.00"
-                                                readonly id="total">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 30%;">Discount (%)</div>
+                                        <!-- Inputs -->
+                                        <div class="d-flex gap-2" style="width: 70%;">
+                                            <input type="text" class="form-control bordered-dark" name="discount"
+                                                id="discount" placeholder="%" style="width: 30%;">&nbsp;
+                                            <input type="text" class="form-control bordered-dark" name="totaldiscount"
+                                                id="totaldiscount" placeholder="Amount" style="width: 70%;">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mt-3 mb-1 d-flex justifly-content-space-between">
-                                <div class="col-md-7"></div>
+
+                            <div class="row mb-3 justify-content-end">
                                 <div class="col-md-5">
-                                    <div class="row "><b class="mt-2">Grand Total : </b>
-                                        <div class="col-md-9"> <input type="text" name="grandtotal[]"
-                                                class="form-control" value="0.00" readonly id="grandtotal">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 30%;">Grand Total</div>
+                                        <!-- Input -->
+                                        <div style="width: 70%;">
+                                            <input type="text" name="grandtotal[]"
+                                                class="form-control bordered-dark fw-bold" id="grandtotal" value="0.00"
+                                                readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3 justify-content-end">
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Label -->
+                                        <div class="fw-bold me-2" style="width: 90%;"></div>
+                                        <div style="width:20%;">
+                                            <button type="button" id="cancel" class="btn btn-sm btn-gradient-dark">
+                                                Cancel
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -231,8 +196,24 @@
                     row.find('.qtyerror').text('');
                 }
             });
-
             initDatePicker();
+
+
+            function calculateFinalGrandTotal() {
+                let total = parseFloat($('#total').val()) || 0;
+                let discountAmount = parseFloat($('#totaldiscount').val()) || 0;
+
+                let grandTotal = total - discountAmount;
+                if (grandTotal < 0) grandTotal = 0;
+
+                $('#grandtotal').val(grandTotal.toFixed(2));
+            }
+            $(document).on('input', '#discount', function() {
+                calculateDiscountFromPercent();
+            });
+            $(document).on('input', '#totaldiscount', function() {
+                calculateDiscountFromAmount();
+            });
 
             function calculateRow(row) {
                 let qty = parseFloat(row.find('.qty').val()) || 0;
@@ -241,7 +222,6 @@
 
                 row.find('.total').val(total.toFixed(2));
 
-                calculatePriceTotal();
                 calculateGrandTotal();
 
             }
@@ -257,15 +237,53 @@
             }
 
             function calculateGrandTotal() {
-                let grandtotal = 0;
+                let totalRowSum = 0;
 
                 $('.total').each(function() {
-                    grandtotal += parseFloat($(this).val()) || 0;
+                    totalRowSum += parseFloat($(this).val()) || 0;
                 });
 
-                $('#grandtotal').val(grandtotal.toFixed(2));
+                let discountAmount = parseFloat($('#totaldiscount').val()) || 0;
+
+                let grandTotal = totalRowSum - discountAmount;
+                if (grandTotal < 0) grandTotal = 0;
+
+                $('#grandtotal').val(grandTotal.toFixed(2));
             }
 
+            function calculateDiscountFromPercent() {
+                let totalRowSum = 0;
+                $('.total').each(function() {
+                    totalRowSum += parseFloat($(this).val()) || 0;
+                });
+
+                let discountPercent = parseFloat($('#discount').val()) || 0;
+                let discountAmount = (totalRowSum * discountPercent) / 100;
+
+                $('#totaldiscount').val(discountAmount.toFixed(2));
+                calculateGrandTotal();
+            }
+
+            function calculateDiscountFromAmount() {
+                let totalRowSum = 0;
+                $('.total').each(function() {
+                    totalRowSum += parseFloat($(this).val()) || 0;
+                });
+
+                let discountAmount = parseFloat($('#totaldiscount').val()) || 0;
+                let discountPercent = totalRowSum > 0 ? (discountAmount / totalRowSum) * 100 : 0;
+
+                $('#discount').val(discountPercent.toFixed(2));
+                calculateGrandTotal();
+            }
+
+            $(document).on('input', '#discount', function() {
+                calculateDiscountFromPercent();
+            });
+
+            $(document).on('input', '#totaldiscount', function() {
+                calculateDiscountFromAmount();
+            });
 
             $(document).on('input', '.qty, .price', function() {
                 let row = $(this).closest('.booking-row');
@@ -282,10 +300,12 @@
 
             function initDatePicker() {
                 flatpickr(".event_dates", {
-                    mode: "range",
+                    mode: "multiple",
                     dateFormat: "Y-m-d",
                     minDate: "today",
+
                     onChange: function(selectedDates, dateStr, instance) {
+
                         if (selectedDates.length > 2) {
                             selectedDates.pop();
                             instance.setDate(selectedDates);
@@ -293,21 +313,32 @@
                         }
 
                         if (selectedDates.length === 2) {
+
                             const today = new Date();
                             today.setHours(0, 0, 0, 0);
 
-                            const sortedDates = [...selectedDates].sort((a, b) => a - b);
+                            const sortedDates = selectedDates.sort((a, b) => a - b);
+                            const startDate = sortedDates[0];
                             const endDate = sortedDates[1];
 
                             if (endDate.getTime() === today.getTime()) {
-                                alert("End date cannot be today. Please select a later date.");
-                                selectedDates.splice(selectedDates.indexOf(endDate), 1);
-                                instance.setDate(selectedDates);
+                                alert("End date must be after today.");
+                                instance.setDate([startDate]);
+                                return;
                             }
+
+                            if (endDate <= startDate) {
+                                alert("End date must be after start date.");
+                                instance.setDate([startDate]);
+                                return;
+                            }
+
+                            instance.setDate(sortedDates);
                         }
                     }
                 });
             }
+
 
             $(document).on('click', '#add', function() {
                 let lastRow = $('.booking-row').last();
@@ -363,6 +394,20 @@
                 calculatePriceTotal();
                 calculateGrandTotal();
             });
+
+            $(document).on('click', '#cancel', function() {
+
+                $('#discount').val(0);
+                $('#totaldiscount').val(0);
+
+                let totalRowSum = 0;
+                $('.total').each(function() {
+                    totalRowSum += parseFloat($(this).val()) || 0;
+                });
+
+                $('#grandtotal').val(totalRowSum.toFixed(2));
+            });
+
 
             $('#addform').submit(function(e) {
                 e.preventDefault();

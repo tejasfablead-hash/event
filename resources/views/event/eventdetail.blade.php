@@ -83,15 +83,13 @@
                                             </p>
                                         </div>
                                     </div>
-                                        <a href="{{ route('EditEventPage', $data->id) }}"
-                                            class="btn btn-gradient-info mt-3">
-                                            Edit Event
-                                        </a>
-                                        <a href="{{route('EventViewPage')}}"
-                                        > <button class="btn btn-dark mt-3">
+                                    <a href="{{ route('EditEventPage', $data->id) }}" class="btn btn-gradient-info mt-3">
+                                        Edit Event
+                                    </a>
+                                    <a href="{{ route('EventViewPage') }}"> <button class="btn btn-dark mt-3">
                                             Back
                                         </button></a>
-                                  
+
                                 </div>
                             </div>
 
@@ -104,66 +102,52 @@
                 <div class="card">
                     <div class="card-body">
 
-                        @if ($result->count() > 0)
-                            <h4 class="card-title">Event Booking Request</h4>
-                            <table class="table table-bordered">
-                                <thead class="table-dark">
+
+                        <h4 class="card-title">Event Booking Request</h4>
+                        <table class="table table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>
+                                        Customer
+                                    </th>
+
+                                    <th>
+                                        Start_Date
+                                    </th>
+                                    <th>
+                                        End_Date
+                                    </th>
+                                    <th>
+                                        Qty
+                                    </th>
+                                    <th>
+                                        Total
+                                    </th>
+                                    <th>
+                                        Status
+                                    </th>
+                                  
+                                </tr>
+                            </thead>
+                       
+                            <tbody class="text-capitalize">
+                                @forelse($eventBookings as $booking)
                                     <tr>
-                                        <th>
-                                            Customer
-                                        </th>
-
-                                        <th>
-                                            Start_Date
-                                        </th>
-                                        <th>
-                                            End_Date
-                                        </th>
-                                        <th>
-                                            Qty
-                                        </th>
-                                        <th>
-                                            Status
-                                        </th>
-                                        <th>
-                                            Action
-                                        </th>
+                                        <td>{{ $booking['customer'] }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($booking['start_date'])->format('j M Y') }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($booking['end_date'])->format('j M Y')}}</td>
+                                        <td>{{ $booking['qty'] }}</td>
+                                        <td>{{ $booking['total'] }}</td>
+                                        <td>{{ $booking['status'] }}</td>
                                     </tr>
-                                </thead>
-                                <tbody class="text-capitalize">
+                                @empty
+                                    <tr>
+                                        <td colspan="9" class="text-center">No bookings found</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
 
-                                    @foreach ($result as $item)
-                                        <tr>
-                                            <td class="py-1">
-                                                {{ $item->getcustomer->name }}
-                                            </td>
-                                            <td>
-                                                {{ optional($item->start_date)->format('d M Y') }}
-                                            </td>
-                                            <td>
-                                                {{ optional($item->end_date)->format('d M Y') }}
-                                            </td>
-                                            <td>
-                                                {{ $item->qty }}
-                                            </td>
-                                            <td>
-                                                {{ $item->status }}
-                                            </td>
-                                            <td>&nbsp;&nbsp;&nbsp;
-                                           
-                                                    <a href="{{ route('EventsBookDetailPage', $item->id) }}"
-                                                        class=" text-decoration-none"><i class="mdi mdi-eye "></i>
-                                                    </a>
-                                          
-                                            </td>
-                                        </tr>
-                                    @endforeach
-
-                                </tbody>
-                            </table>
-                        @else
-                        <h4 class="card-title">No Event Request</h4>    
-                        @endif
 
                     </div>
                 </div>

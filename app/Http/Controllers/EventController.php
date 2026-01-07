@@ -15,10 +15,9 @@ class EventController extends Controller
 {
     public function index()
     {
-            $city = City::all();
-            $category = Category::all();
-            return view('event.insert', compact(['city', 'category']));
-      
+        $city = City::all();
+        $category = Category::all();
+        return view('event.insert', compact(['city', 'category']));
     }
     public function view()
     {
@@ -27,13 +26,39 @@ class EventController extends Controller
     }
     public function eventdetail($id)
     {
-        $result = Booking::where('event',$id)->get();
         $data = Event::where('id', $id)->first();
-        return view('event.eventdetail', compact(['data','result']));
+        $result = Booking::whereJsonContains('event', (string)$id)->get();
+ 
+        $eventBookings = [];
+
+        foreach ($result as $value) {
+            $event = (array)$value->event;
+            $startdate = (array)$value->start_date;
+            $enddate = (array)$value->end_date;
+            $qtys = (array)$value->qty;
+            $totals = (array)$value->total;
+           
+            foreach ($event as $key => $values) {
+                if ($values == $id) {
+                    $eventBookings[] = [
+                        'id'  => $value->id,
+                        'event'=>$event[$key],
+                        'customer' => $value->getcustomer->name,
+                        'start_date'  => $startdate[$key] ?? null,
+                        'end_date'    => $enddate[$key] ?? null,
+                        'qty'         => $qtys[$key] ?? 0,
+                        'total'       => ($totals[$key]*$qtys[$key]) ?? 0,
+                        'status'      => $value->status,
+                    ];
+                }
+            }
+        }
+        return view('event.eventdetail', compact(['data', 'eventBookings']));
     }
 
     public function store(Request $request)
     {
+       
         $validate = Validator::make(
             $request->all(),
             [

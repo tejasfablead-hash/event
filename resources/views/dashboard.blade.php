@@ -24,8 +24,8 @@
         }
 
         .fc-toolbar-title {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 16px;
+            font-weight: 400;
             text-transform: capitalize;
         }
 
@@ -106,13 +106,15 @@
             <div class="row">
                 <div class="col-12 grid-margin">
                     <div class="card">
-                        <div class="card-body">
-                            <h4 class="card-title mb-3">Event Calendar</h4>
+                        <div class="card-body text-capitalize">
+                            {{-- <h4 class="card-title mb-3">Event Calendar</h4> --}}
                             <div id="calendar"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
+           
 
             <!-- EVENT MODAL -->
             <div class="modal fade" id="eventModal" tabindex="-1">
@@ -128,12 +130,11 @@
                         <div class="modal-body text-capitalize">
                             <p><strong>Customer :</strong> <span id="m_customer"></span></p>
                             <p><strong>Event :</strong> <span id="m_event"></span></p>
+                            <p><strong>Qty :</strong> <span id="m_qty"></span></p>
                             <hr>
-                            <p><strong>Start :</strong> <span id="m_start"></span></p>
-                            <p><strong>End :</strong> <span id="m_end"></span></p>
+                            <p><strong>Start Date :</strong> <span id="m_start"></span></p>
+                            <p><strong>End Date :</strong> <span id="m_end"></span></p>
                             <hr>
-                            <p><strong>City :</strong> <span id="m_city"></span></p>
-                            <p><strong>Status :</strong> <span id="m_status"></span></p>
                         </div>
 
                         <div class="modal-footer">
@@ -148,7 +149,8 @@
 
         @include('footer')
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -156,7 +158,7 @@
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                contentHeight: 600,
+                contentHeight: 400,
 
                 headerToolbar: {
                     left: 'prev,next today',
@@ -173,10 +175,9 @@
                     let e = info.event;
                     document.getElementById('m_customer').innerText = e.extendedProps.customer;
                     document.getElementById('m_event').innerText = e.extendedProps.event;
+                    document.getElementById('m_qty').innerText = e.extendedProps.qty;
                     document.getElementById('m_start').innerText = e.startStr;
                     document.getElementById('m_end').innerText = e.endStr ?? '-';
-                    document.getElementById('m_status').innerText = e.extendedProps.status;
-                    document.getElementById('m_city').innerText = e.extendedProps.city;
 
                     $('#eventModal').modal('show');
                 }
@@ -184,5 +185,6 @@
 
             calendar.render();
         });
+     
     </script>
 @endsection
