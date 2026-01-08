@@ -1,44 +1,6 @@
 @extends('index')
 
 @section('container')
-    <style>
-        /* DASHBOARD CARDS */
-        .stretch-card .card {
-            min-height: 160px;
-            border-radius: 14px;
-        }
-
-        .card-body h2 {
-            font-size: 32px;
-            font-weight: 700;
-        }
-
-        .card-body h4 {
-            font-size: 16px;
-        }
-
-        /* CALENDAR */
-        #calendar {
-            width: 100%;
-            /* min-height: 500px; */
-        }
-
-        .fc-toolbar-title {
-            font-size: 16px;
-            font-weight: 400;
-            text-transform: capitalize;
-        }
-
-        .fc-button {
-            text-transform: capitalize;
-        }
-
-        .fc-daygrid-event {
-            font-size: 13px;
-            padding: 2px 4px;
-        }
-    </style>
-
     <div class="main-panel">
         <div class="content-wrapper">
 
@@ -66,7 +28,7 @@
                         <div class="card-body">
                             <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="">
                             <h4>Total Events</h4>
-                            <h2>{{ $event }}</h2>
+                            <h2>{{ $events }}</h2>
                         </div>
                     </div>
                 </div>
@@ -113,34 +75,102 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="row">
+                <div class="col-12 grid-margin">
+                    <div class="card">
+                        <div class="card-body text-capitalize">
+                            <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
+                                <!-- Title -->
+                                <h4 class=" fw-bold text-dark">All Events</h4>
+                                <div class="d-flex">
+                                    <a href="{{ route('EventAddPage') }}" class="btn btn-primary btn-sm shadow-sm">
+                                        <i class="mdi mdi-plus"></i> Add New Record
+                                    </a>
+                                </div>
+                            </div>
+                            <br>
+                            <table class="table table-hover" id="myTable">
 
-           
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>
+                                            Image
+                                        </th>
 
-            <!-- EVENT MODAL -->
-            <div class="modal fade" id="eventModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered modal-md">
-                    <div class="modal-content">
+                                        <th>
+                                            Title
+                                        </th>
+                                        <th>
+                                            Category
+                                        </th>
+                                        <th>
+                                            City
+                                        </th>
+                                        <th>
+                                            Capacity
+                                        </th>
+                                        <th>
+                                            Price
+                                        </th>
+                                        <th>
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                        <div class="modal-header">
-                            <h5 class="modal-title">Booking Details</h5>
-                            <button type="button" class="btn-close border-0" data-bs-dismiss="modal">x</button>
+                                    @foreach ($event as $item)
+                                        <tr class="text-capitalize">
+                                            <td class="py-1">
+                                                @php
+                                                    $images = json_decode($item->image, true);
+
+                                                @endphp
+                                                @if (is_array($images) && count($images) > 0)
+                                                    @php
+                                                        $firstImage = $images[0];
+                                                    @endphp
+                                                    <img src="{{ asset('/storage/' . $firstImage) }}">
+                                                @endif
+                                            </td>
+
+                                            <td>
+                                                {{ $item->title }}
+                                            </td>
+                                            <td>
+                                                {{ $item->getcategory->category_name }}
+                                            </td>
+                                            <td>
+                                                {{ $item->getcity->city_name }}
+                                            </td>
+                                            <td>
+                                                {{ $item->capacity }}
+                                            </td>
+                                            <td>
+                                                {{ $item->price }}
+                                            </td>
+                                            <td>&nbsp;&nbsp;&nbsp;
+                                                <a href="{{ route('EventDetailPage', $item->id) }}"
+                                                    class=" text-decoration-none "><i
+                                                        class="mdi mdi-eye mdi-24px color-black"></i>
+                                                </a>&nbsp;&nbsp;&nbsp;
+                                                <a href="{{ route('EditEventPage', $item->id) }}"
+                                                    class=" text-decoration-none  text-dark"><i
+                                                        class="mdi mdi-pencil-box mdi-24px"></i>
+                                                </a>&nbsp;&nbsp;&nbsp;
+                                                <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
+                                                    data-id="{{ $item->id }}"><i
+                                                        class="mdi mdi-delete btn-del mdi-24px"></i>
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
 
                         </div>
-
-                        <div class="modal-body text-capitalize">
-                            <p><strong>Customer :</strong> <span id="m_customer"></span></p>
-                            <p><strong>Event :</strong> <span id="m_event"></span></p>
-                            <p><strong>Qty :</strong> <span id="m_qty"></span></p>
-                            <hr>
-                            <p><strong>Start Date :</strong> <span id="m_start"></span></p>
-                            <p><strong>End Date :</strong> <span id="m_end"></span></p>
-                            <hr>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button class="btn btn-dark btn-sm " data-bs-dismiss="modal">Close</button>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -185,6 +215,5 @@
 
             calendar.render();
         });
-     
     </script>
 @endsection

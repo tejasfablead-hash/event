@@ -20,7 +20,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body">
-                        @if (Auth::user()->role == 1)
+                       
                             <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
                                 <!-- Title -->
                                 <h4 class=" fw-bold text-dark">Manage Event Data</h4>
@@ -30,8 +30,7 @@
                                     </a>
                                 </div>
                             </div>
-                        @else
-                        @endif
+                      
                         <br>
                      <table class="table table-hover rounded-table" id="myTable">
 
@@ -106,75 +105,6 @@
                                             </td>
                                      
                                     </tr>
-                                    <div class="modal fade" id="topUpModal" tabindex="-1" aria-labelledby="eventModalLabel"
-                                        aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-mg">
-                                            <div class="modal-content border-0 rounded-4 shadow">
-
-                                                <!-- Modal Header -->
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title fw-bold" id="eventModalLabel">
-                                                        Book Event
-                                                    </h5>
-                                                    <button type="button" class="btn-close border-0" 
-                                                        data-bs-dismiss="modal" aria-label="Close">X</button>
-                                                </div>
-
-                                                <div class="modal-body px-8">
-                                                    <form id="modelform">
-                                                        @csrf
-                                                        <div class="form-floating ">
-                                                            <input type="hidden" name="event" id="event_id">
-                                                            <input type="hidden" name="customer"
-                                                                value="{{ Auth::id() }}">
-                                                        </div>
-                                                        <!-- Start & End Date -->
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="form-floating mb-3">
-                                                                    <label for="startDate">Start Date</label>
-                                                                    <input type="date" class="form-control"
-                                                                        id="startDate" name="startdate">
-                                                                    <span class="text-danger error"
-                                                                        id="startdate_error"></span>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <div class="form-floating mb-3">
-                                                                    <label for="endDate">End Date</label>
-                                                                    <input type="date" class="form-control"
-                                                                        id="endDate" name="enddate">
-                                                                    <span class="text-danger error"
-                                                                        id="enddate_error"></span>
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row">
-                                                            <div class="col-md-12">
-                                                                <div class="form-floating mb-3">
-                                                                    <label for="qty">Qty</label>
-                                                                    <input type="text" class="form-control"
-                                                                        id="qty" name="qty">
-                                                                    <span class="text-danger error" id="qty_error"></span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <input type="submit" class="btn btn-primary btn-lg w-100 mt-3"
-                                                            name="submit" value="Book Event" />
-
-                                                    </form>
-                                                    
-                                                    <div id="message" class="alert alert-success text-center mt-2 d-none"
-                                                        role="alert"></div>
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
                                 @endforeach
                             </tbody>
                         </table>
@@ -226,11 +156,6 @@
                                 swal("Cancelled", "Your imaginary record is safe :)", "error");
                             }
                         });
-                });
-
-                $('.open-model').on('click', function() {
-                    var id = $(this).data('id');
-                    $('#event_id').val(id);
                 });
 
 

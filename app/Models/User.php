@@ -52,4 +52,7 @@ class User extends Authenticatable
     public function booking(){
         return $this->hasOne(Booking::class,'customer','id');
     } 
+    public function getpayment(){
+        return $this->hasOne(Payment::class,'user_id','id');
+    } 
 }

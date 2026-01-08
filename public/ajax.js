@@ -9,6 +9,7 @@ function reusableAjaxCall(url, method, data, successCallback, errorCallback) {
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
+         
         success: function (response) {
             if (successCallback) successCallback(response);
         },

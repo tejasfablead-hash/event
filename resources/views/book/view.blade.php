@@ -3,14 +3,14 @@
     <style>
         .tbody-border td,
         th {
-            border: 1px solid #000 !important;
+            border: 1px solid #b3afaf !important;
         }
     </style>
     <div class="main-panel">
         <div class="content-wrapper">
             <div class="page-header">
                 <h3 class="page-title">
-                    
+
                 </h3>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -153,23 +153,25 @@
                         }
                     });
             });
-        $('#modelform').on('submit', function(e) {
-        e.preventDefault();
-        var formData = new FormData(this);
-        var url = "/event-book-update";
-        $('.error').text('');
-        reusableAjaxCall(url, 'POST', formData, function(response) {
-            if (response.status) {
-                $('#message').removeClass('d-none').html(response.message).fadeIn();
-                setTimeout(function() {
-                    $('#message').addClass('d-none').fadeOut();
-                    location.reload();
-                }, 2000);
-            }
-        }, function(error) {
-            console.log(error);
-        });
-        });
+
+            $('#modelform').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var url = "/event-book-update";
+                $('.error').text('');
+                
+                reusableAjaxCall(url, 'POST', formData, function(response) {
+                    if (response.status) {
+                        $('#message').removeClass('d-none').html(response.message).fadeIn();
+                        setTimeout(function() {
+                            $('#message').addClass('d-none').fadeOut();
+                            location.reload();
+                        }, 2000);
+                    }
+                }, function(error) {
+                    console.log(error);
+                });
+            });
         });
     </script>
 @endsection

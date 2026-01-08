@@ -2,8 +2,50 @@
 @section('container')
     <style>
         .bordered-dark {
-            border: 1px solid #a39f9f;
+            border: 1px solid #a39f9f !important;
             border-radius: 6px;
+        }
+
+        .tbody-border td,
+        th {
+            border: 1px solid #b3afaf !important;
+        }
+
+        .border {
+            border: 1px solid #b3afaf !important;
+            border-radius: 6px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .loader-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader-box {
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #ddd;
+            border-top: 4px solid #4b49ac;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
     <div class="main-panel">
@@ -30,21 +72,23 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for=""> Select Customer</label>
-                                    <select class="form-control  customer text-capitalize border-redius" name="customer">
+                                    <select class="form-control  customer text-capitalize border border-redius"
+                                        name="customer">
                                         <option value="">Select customer....</option>
                                         @foreach ($customer as $item)
                                             <option value="{{ $item->id }}">{{ $item->name }}</option>
                                         @endforeach
                                     </select>
-                                    <span class="text-danger error customererror" id="customer_error"></span>
+                                    <small class="text-danger error customererror" id="customer_error"></small>
                                 </div>
                             </div>
                             <br>
 
                             <div class="row ">
-                                <table id="table" class="table  
+                                <table id="table"
+                                    class="table  tbody-border
                             table-bordered rounded">
-                                    <thead class="thead-dark  bordered-dark">
+                                    <thead class="thead-dark tbody-border bordered-dark">
                                         <tr>
                                             <th>Event</th>
                                             <th>Select Date</th>
@@ -53,11 +97,11 @@
                                             <th colspan="2">Main Total</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="bordered-dark">
+                                    <tbody class="bordered-dark tbody-border">
                                         <tr class="booking-row bordered-dark">
 
                                             <td class="gap-2">
-                                                <select class="form-control event border-redius" name="event[]">
+                                                <select class="form-control event border" name="event[]">
                                                     <option value="">Select Event....</option>
                                                     @foreach ($event as $item)
                                                         <option value="{{ $item->id }}"
@@ -65,26 +109,27 @@
                                                             {{ $item->title }}</option>
                                                     @endforeach
                                                 </select>
-                                                <span class="text-danger error eventerror"></span>
+                                                <small class="text-danger error eventerror"></small>
                                             </td>
                                             <td>
-                                                <input type="text" name="eventdate[]" class="form-control event_dates"
-                                                    placeholder="Select dates">
-                                                <span class="text-danger error eventdateerror"></span>
+                                                <input type="text" name="eventdate[]"
+                                                    class="form-control border  event_dates" placeholder="Select dates">
+                                                <small class="text-danger error eventdateerror"></small>
                                             </td>
 
                                             <td>
-                                                <input type="number" name="qty[]" value="1" class="form-control qty"
-                                                    placeholder="enter qty">
-                                                <span class="text-danger error qtyerror"></span>
+                                                <input type="number" name="qty[]" value="1"
+                                                    class="form-control qty border" placeholder="enter qty">
+                                                <small class="text-danger error qtyerror"></small>
                                             </td>
                                             <td>
-                                                <input type="number" name="price[]" class="form-control price" readonly>
-                                                <span class="text-danger error priceerror"></span>
+                                                <input type="number" name="price[]" class="form-control price border"
+                                                    readonly>
+                                                <small class="text-danger error priceerror"></small>
                                             </td>
                                             <td>
-                                                <input type="text" name="total[]" class="form-control total">
-                                                <span class="text-danger error totalerror"></span>
+                                                <input type="text" name="total[]" class="form-control total border">
+                                                <small class="text-danger error totalerror"></small>
                                             </td>
                                             <td>
                                                 <i class="mdi mdi-plus-circle-outline mdi-24px" id="add"></i>
@@ -93,13 +138,7 @@
                                     </tbody>
 
                                 </table>
-                                <div class="row mt-2">
-                                    <div class="col-md-1">
-                                        <input type="submit" name="submit" class="btn btn-gradient-primary mr-2"
-                                            value="Submit">
-                                    </div>
 
-                                </div>
                             </div>
                             <div class="row mt-3 mb-2 justify-content-end">
                                 <div class="col-md-5">
@@ -108,15 +147,14 @@
                                         <div class="fw-bold me-2" style="width: 30%;">Discount (%)</div>
                                         <!-- Inputs -->
                                         <div class="d-flex gap-2" style="width: 70%;">
-                                            <input type="text" class="form-control bordered-dark" name="discount"
-                                                id="discount" placeholder="%" style="width: 30%;">&nbsp;
+                                            <input type="text" class="form-control bordered-dark " name="discount"
+                                                id="discount" placeholder="%" style="width: 30%;">&nbsp;&nbsp;
                                             <input type="text" class="form-control bordered-dark" name="totaldiscount"
                                                 id="totaldiscount" placeholder="Amount" style="width: 70%;">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                             <div class="row mb-3 justify-content-end">
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center">
@@ -125,25 +163,94 @@
                                         <!-- Input -->
                                         <div style="width: 70%;">
                                             <input type="text" name="grandtotal[]"
-                                                class="form-control bordered-dark fw-bold" id="grandtotal" value="0.00"
-                                                readonly>
+                                                class="form-control bordered-dark fw-bold border" id="grandtotal"
+                                                value="0.00" readonly>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-3 justify-content-end">
-                                <div class="col-md-5">
-                                    <div class="d-flex align-items-center">
-                                        <!-- Label -->
-                                        <div class="fw-bold me-2" style="width: 90%;"></div>
-                                        <div style="width:20%;">
-                                            <button type="button" id="cancel" class="btn btn-sm btn-gradient-dark">
+
+                            <hr>
+                            <!-- PAY BUTTON -->
+
+                            <div class="row justify-content-end">
+                                <div class="col-md-5 text-end">
+
+                                    <button type="button" id="cancel" class="btn btn-gradient-dark ms-2">
+                                        Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-gradient-primary" id="openPaymentModal">
+                                        Pay Now
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Stripe Payment Modal -->
+                            <div class="modal fade" id="stripeModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-md">
+                                    <div class="modal-content stripe-modal">
+
+                                        <!-- Header -->
+                                        <div class="modal-header stripe-header">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="mdi mdi-credit-card-outline fs-4"></i>
+                                                <h5 class="modal-title fw-semibold mb-0">Secure Payment</h5>
+                                            </div>
+                                            <button type="button" class="btn-close border-0"
+                                                data-bs-dismiss="modal">x</button>
+                                        </div>
+
+                                        <div class="modal-body text-capitalize">
+
+                                            <div id="payment-success" class="alert alert-success text-center d-none"><br>
+                                                Payment completed successfully
+                                            </div>
+                                            <div class="loader-overlay d-none" id="paymentLoader">
+                                                <div class="loader-box">
+                                                    <div class="spinner"></div>
+                                                    <p>Processing payment...</p>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="payment-summary mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Customer : </span>
+                                                    <strong id="modalCustomerName">-</strong>
+                                                </div><br>
+                                                <div class="d-flex justify-content-between mt-1">
+                                                    <span>Total : </span>
+                                                    <strong class="">₹ <span id="modalAmount">0.00</span></strong>
+                                                </div>
+
+                                            </div>
+
+                                            <label class="form-label fw-semibold">Card details : </label>
+                                            <div id="card-element" class="stripe-card-input "></div>
+                                            <small id="card-errors" class="text-danger mt-2 d-block"></small>
+
+                                            <div class="secure-note mt-3">
+                                                <i class="mdi mdi-lock-outline"></i>
+                                                Secured by Stripe • 256-bit encryption
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer stripe-footer">
+
+                                            <button type="button" class="btn btn-gradient-dark ms-2"
+                                                data-bs-dismiss="modal">
                                                 Cancel
                                             </button>
+                                            <button type="button" class="btn btn-gradient-primary px-4"
+                                                id="confirmPayBtn">
+                                                Confirm Pay <span id="payBtnAmount"></span>
+                                            </button>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
+
                         </form>
                     </div>
                 </div>
@@ -151,9 +258,12 @@
         </div>
     </div>
 
+
+
     <script src="https://code.jquery.com/jquery-3.7.1.js" crossorigin="anonymous"></script>
     <script src="{{ asset('ajax.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         $(document).ready(function() {
 
@@ -197,7 +307,6 @@
                 }
             });
             initDatePicker();
-
 
             function calculateFinalGrandTotal() {
                 let total = parseFloat($('#total').val()) || 0;
@@ -346,7 +455,7 @@
                     return;
                 }
                 $('#table').append(`
-                        <tr class="booking-row">
+                        <tr class="booking-row tbody-border">
                             <td>
                                 <select class="form-control event" name="event[]">
                                                 <option value="">Select Event....</option>
@@ -355,24 +464,24 @@
                                                         {{ $item->title }}</option>
                                                 @endforeach
                                             </select>
-                                                <span class="text-danger error eventerror" ></span>
+                                                <small class="text-danger error eventerror" ></small>
 
                             </td>
 
                             <td>
                                 <input type="text" name="eventdate[]" class="form-control event_dates" placeholder="Select dates">
-                                                <span class="text-danger error eventdateerror"></span>
+                                                <small class="text-danger error eventdateerror"></small>
 
                             </td>
 
                             <td>
                                 <input type="number" name="qty[]" class="form-control qty" value="1">
-                                  <span class="text-danger error qtyerror" ></span>
+                                  <small class="text-danger error qtyerror" ></small>
                             </td>
 
                             <td>
                                 <input type="number" name="price[]" class="form-control price" readonly>
-                                 <span class="text-danger error priceerror" ></span>
+                                 <small class="text-danger error priceerror" ></small>
 
                             </td>
 
@@ -409,41 +518,120 @@
             });
 
 
-            $('#addform').submit(function(e) {
-                e.preventDefault();
-                var Data = $('#addform')[0];
-                var formData = new FormData(Data);
-                console.log(formData);
-                var url = "{{ route('EventsStorePage') }}";
-                $('.error').text('');
-                $('.customererror').text('');
-                reusableAjaxCall(url, 'POST', formData, function(response) {
-                    console.log(response.message);
-                    if (response.status == true) {
-                        $('#message').removeClass('d-none').html(response.message)
-                            .fadeIn();
-                        setTimeout(function() {
-                            $('#message').addClass('d-none').html('').fadeOut();
-                            window.location.href =
-                                "{{ route('EventsBookViewPage') }}";
-                        }, 4000);
-                    }
-                    $('#addform')[0].reset();
-                    $(".error").empty();
+            let loaderTimeout = null;
+            function showPaymentLoader() {
+                $('#paymentLoader').removeClass('d-none');
+                $('#confirmPayBtn').prop('disabled', true);
+                 $('#card-errors').text('');
+                loaderTimeout = setTimeout(() => {
+                    hidePaymentLoader();
+                    $('#card-errors').text('Payment taking too long. Please try again.');
+                    paymentProcessing = false;
+                }, 15000);
+            }
 
-                }, function(error) {
-                    if (error.status !== 422) return;
-                    let errors = error.responseJSON.errors;
-                    $('.error').text('');
-                    $('.customererror').text('');
-                    for (let key in errors) {
-                        let [field, index] = key.split('.');
-                        $('.booking-row')
-                            .eq(index)
-                            .find('.' + field + 'error')
-                            .text(errors[key][0]);
-                    }
-                });
+            function hidePaymentLoader() {
+                $('#paymentLoader').addClass('d-none');
+                $('#confirmPayBtn').prop('disabled', false);
+                  if (loaderTimeout) {
+        clearTimeout(loaderTimeout);
+        loaderTimeout = null;
+    }
+            }
+
+
+            $('#openPaymentModal').click(function() {
+
+                let amount = $('#grandtotal').val();
+                let customerId = $('.customer').val();
+                let event = $('.event').val();
+                let eventdate = $('.event_dates').val();
+                let customerName = $('.customer option:selected').text();
+                $('.customererror, .eventerror, .eventdateerror, .amounterror').text('');
+
+                if (!customerId) {
+                    $('.customererror').text('Customer is required');
+                    return;
+                }
+                if (!event) {
+                    $('.eventerror').text('Event is required');
+                    return;
+
+                }
+                if (!eventdate) {
+                    $('.eventdateerror').text('Eventdate is required');
+                    return;
+
+                }
+                if (!amount || amount <= 0) {
+                    $('.amountrerror').text('Amount is required');
+                    return;
+                }
+
+
+                $('#modalAmount').text(amount);
+                $('#modalCustomerName').text(customerName);
+
+                $('#stripeModal').modal('show');
+            });
+
+            let paymentProcessing = false;
+            const stripe = Stripe("{{ config('services.stripe.key') }}");
+            const elements = stripe.elements();
+            const card = elements.create('card');
+            card.mount('#card-element');
+
+            $('#confirmPayBtn').click(async function() {
+                if (paymentProcessing) return;
+                paymentProcessing = true;
+                showPaymentLoader();
+                const {
+                    token,
+                    error
+                } = await stripe.createToken(card);
+
+                if (error) {
+                    $('#card-errors').text(error.message);
+                    paymentProcessing = false;
+                    return;
+                }
+                let formData = new FormData($('#addform')[0]);
+                formData.append('stripeToken', token.id);
+                formData.append('amount', $('#grandtotal').val());
+                var url = "{{ route('StripePayment') }}";
+                reusableAjaxCall(url, 'POST', formData,
+
+                    function(response) {
+                        hidePaymentLoader();
+                        if (response.status == true) {
+                            $('#card-element').hide();
+                            $('#confirmPayBtn').hide();
+                            $('#card-errors').hide();
+                            $('#payment-success').removeClass('d-none');
+                            $('#addform')[0].reset();
+                            $(".error").empty();
+                            setTimeout(function() {
+                                $('#stripeModal').modal('hide');
+                                window.location.href =
+                                    "{{ route('EventsBookViewPage') }}";
+                            }, 2000);
+                        }
+                    },
+                    function(error) {
+                        hidePaymentLoader();
+                        paymentProcessing = false;
+                        if (error.status !== 422) return;
+                        let errors = error.responseJSON.errors;
+                        $('.error').text('');
+                        $('.customererror').text('');
+                        for (let key in errors) {
+                            let [field, index] = key.split('.');
+                            $('.booking-row')
+                                .eq(index)
+                                .find('.' + field + 'error')
+                                .text(errors[key][0]);
+                        }
+                    });
             });
         });
     </script>

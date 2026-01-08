@@ -1,244 +1,3 @@
-{{-- @extends('index')
-
-@section('container')
-    <div class="main-panel">
-        <div class="content-wrapper">
-
-            <!-- PAGE HEADER -->
-            <div class="page-header">
-                <h6 class="page-title pr-5">
-                    <div id="message" class="alert alert-success text-center d-none"></div>
-                </h6>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">Booking</li>
-                        <li class="breadcrumb-item active">Update Booking</li>
-                    </ol>
-                </nav>
-            </div>
-
-            <div class="col-12 grid-margin">
-                <div class="card">
-                    <div class="card-body">
-
-                        <h4 class="card-title">Update Booking</h4>
-                        <br>
-
-                        <form id="updatebook">
-                            @csrf
-                            <input type="hidden" name="id" value="{{ $single->id }}">
-
-                            <!-- EVENT + CUSTOMER -->
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Event</label>
-                                        <div class="col-sm-9">
-                                            <select class="form-control event" name="event">
-                                                <option value="">Select Event...</option>
-                                                @foreach ($event as $item)
-                                                    <option value="{{ $item->id }}" data-price="{{ $item->price }}"
-                                                        {{ $item->id == $single->event ? 'selected' : '' }}>
-                                                        {{ $item->title }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <span class="text-danger error eventerror"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Customer</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" class="form-control"
-                                                value="{{ $single->getcustomer->name }}" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- QTY + STATUS -->
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Qty</label>
-                                        <div class="col-sm-9">
-                                            <input type="number" name="qty" class="form-control qty"
-                                                value="{{ $single->qty }}" min="1">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Status</label>
-                                        <div class="col-sm-9">
-                                            <select class="form-control" name="status">
-                                                <option value="pending"
-                                                    {{ $single->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                <option value="confirmed"
-                                                    {{ $single->status == 'confirmed' ? 'selected' : '' }}>Confirmed
-                                                </option>
-                                                <option value="cancelled"
-                                                    {{ $single->status == 'cancelled' ? 'selected' : '' }}>Cancelled
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- START + END DATE -->
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Start Date</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" name="startdate" value="{{ $single->start_date }}"
-                                                class="form-control startdate" placeholder="Select start date">
-                                            <span class="text-danger error startdate-error"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">End Date</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" name="enddate" value="{{ $single->end_date }}"
-                                                class="form-control enddate" placeholder="Select end date">
-                                            <span class="text-danger error enddate-error"></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- TOTAL -->
-                            <div class="row">
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Price</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" name="total" id="total" value="{{ $single->total }}" class="form-control" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group row">
-                                        <label class="col-sm-3 col-form-label">Grand Total</label>
-                                        <div class="col-sm-9">
-                                            <input type="text" name="grandtotal" id="grandtotal" value="{{ $single->grandtotal }}" class="form-control" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <!-- SUBMIT -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <input type="submit" class="btn btn-gradient-primary" value="Update Booking">
-                                </div>
-                            </div>
-
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- SCRIPTS -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="{{ asset('ajax.js') }}"></script>
-
-    <script>
-        $(document).ready(function() {
-
-            function calculateTotal() {
-                let qty = parseInt($('.qty').val()) || 0;
-                let price = $('.event option:selected').data('price') || 0;
-
-                $('#total').val(price);
-                $('#grandtotal').val(qty * price);
-            }
-
-            $('.qty, .event').on('input change', calculateTotal);
-            calculateTotal();
-       
-
-            let endPicker;
-
-            flatpickr(".startdate", {
-                dateFormat: "Y-m-d",
-                minDate: "today",
-                onChange: function(selectedDates) {
-                    if (selectedDates.length) {
-                        let minEnd = new Date(selectedDates[0]);
-                        minEnd.setDate(minEnd.getDate());
-                        endPicker.set("minDate", minEnd);
-                        endPicker.clear();
-                    }
-                }
-            });
-
-            endPicker = flatpickr(".enddate", {
-                dateFormat: "Y-m-d",
-                minDate: "today"
-            });
-
-            $('#updatebook').submit(function(e) {
-                e.preventDefault();
-                let isValid = true;
-                let start = $('.startdate').val();
-                let end = $('.enddate').val();
-                if (!start) {
-                    $('.startdate-error').text('Start date is required');
-                    isValid = false;
-                }
-                if (!end) {
-                    $('.enddate-error').text('End date is required');
-                    isValid = false;
-                }
-                if (!isValid) return;
-
-                var data = $('#updatebook')[0];
-                var formData = new FormData(data);
-                $('.error').text('');
-                var url = "{{ route('EventsBooksUpdatePage') }}";
-                reusableAjaxCall(url, 'POST', formData, function(response) {
-                    console.log(response.message);
-                    if (response.status == true) {
-                        $('#message').removeClass('d-none').html(response.message)
-                            .fadeIn();
-                        setTimeout(function() {
-                            $('#message').addClass('d-none').html('').fadeOut();
-                            window.location.href =
-                                "{{ route('EventsBookViewPage') }}";
-                        }, 4000);
-                    }
-                    $('#updatebook')[0].reset();
-                    $(".error").empty();
-                });
-            });
-
-        });
-    </script>
-@endsection --}}
-
 
 @extends('index')
 @section('container')
@@ -307,6 +66,18 @@
             border: 1px solid #a39f9f;
             border-radius: 6px;
         }
+        .tbody-border td,
+        th {
+            border: 1px solid #b3afaf !important;
+        }
+
+        .border
+        {
+            border: 1px solid #b3afaf !important;
+            border-radius: 6px;
+            outline: none;
+            transition: 0.3s;
+        }
     </style>
     <div class="main-panel">
         <div class="content-wrapper">
@@ -332,7 +103,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for=""> Customer</label>
-                                    <input type="text" name="customer" class="form-control customer"
+                                    <input type="text" name="customer" class="form-control border customer"
                                         placeholder="Select customer" value="{{ $single->getcustomer->name }}" readonly>
                                     <span class="text-danger error customererror" id="customer_error"></span>
                                     <input type="hidden" name="id" class="form-control id" placeholder="Select id"
@@ -343,10 +114,10 @@
 
 
                             <div class="row ">
-                                <table id="table" class="table  
-                            table-bordered rounded">
-                                    <thead class="thead-dark  ">
-                                        <tr>
+                                <table id="table" class="table   
+                            table-bordered rounded tbody-border">
+                                    <thead class="thead-dark tbody-border ">
+                                        <tr class="">
                                             <th>Event</th>
                                             <th>Select Date</th>
                                             <th>Qty</th>
@@ -363,7 +134,7 @@
                                         $priceTotal = 0;
                                         $grandTotal = 0;
                                     @endphp
-                                    <tbody>
+                                    <tbody class="tbody-border">
                                         @foreach ($events as $key => $val)
                                             @php
                                                 $price = $event->where('id', $val)->first()->price ?? 0;
@@ -375,7 +146,7 @@
                                             @endphp
                                             <tr class="booking-row">
                                                 <td class="gap-2">
-                                                    <select class="form-control event border-redius" name="event[]">
+                                                    <select class="form-control event border-redius border" name="event[]">
                                                         <option value="">Select Event....</option>
                                                         @foreach ($event as $item)
                                                             <option value="{{ $item->id }}"
@@ -388,24 +159,24 @@
                                                 </td>
                                                 <td>
                                                     <input type="text" name="eventdate[]"
-                                                        class="form-control event_dates" placeholder="Select dates"
+                                                        class="form-control event_dates border" placeholder="Select dates"
                                                         value="{{ $dates[$key] }}">
                                                     <span class="text-danger error eventdateerror"></span>
                                                 </td>
 
                                                 <td>
-                                                    <input type="number" name="qty[]" class="form-control qty"
+                                                    <input type="number" name="qty[]" class="form-control border qty"
                                                         value="{{ $qty }}" placeholder="enter qty">
                                                     <span class="text-danger error qtyerror"></span>
                                                 </td>
                                                 <td>
                                                     <input type="number" name="price[]" value="{{ $price }}"
-                                                        class="form-control price" readonly>
+                                                        class="form-control price border" readonly>
                                                     <span class="text-danger error priceerror"></span>
                                                 </td>
                                                 <td>
                                                     <input type="text" name="total[]"
-                                                        value="{{ number_format($rowTotal) }}" class="form-control total">
+                                                        value="{{ number_format($rowTotal) }}" class="form-control total border">
                                                     <span class="text-danger error totalerror"></span>
                                                 </td>
                                                 <td>
@@ -451,7 +222,7 @@
                                         <div class="fw-bold me-2" style="width: 30%;">Grand Total</div>
                                         <!-- Input -->
                                         <div style="width: 70%;">
-                                            <input type="text" name="grandtotal[]" class="form-control"
+                                            <input type="text" name="grandtotal[]" class="form-control border"
                                                 value="{{ number_format($grandTotal) }}" readonly id="grandtotal">
                                         </div>
                                     </div>
@@ -656,7 +427,7 @@
                     return;
                 }
                 $('#table').append(`
-                        <tr class="booking-row">
+                        <tr class="booking-row tbody-border">
                             <td>
                                 <select class="form-control event" name="event[]">
                                                 <option value="">Select Event....</option>
@@ -704,6 +475,7 @@
                 calculatePriceTotal();
                 calculateGrandTotal();
             });
+
             $('.booking-row').each(function() {
                 calculateRow($(this));
             });
@@ -720,6 +492,7 @@
 
                 $('#grandtotal').val(totalRowSum.toFixed(2));
             });
+            
             $('#updateform').submit(function(e) {
                 e.preventDefault();
                 var Data = $('#updateform')[0];

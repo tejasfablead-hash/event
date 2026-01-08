@@ -1,8 +1,8 @@
 @extends('index')
 @section('container')
-<style>
-    
-</style>
+    <style>
+
+    </style>
     <div class="main-panel">
         <div class="content-wrapper">
             <div class="page-header">
@@ -11,8 +11,8 @@
                 </h3>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">User</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">View User</li>
+                        <li class="breadcrumb-item"><a href="#">Payment</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">View Payment</li>
                     </ol>
                 </nav>
             </div>
@@ -20,56 +20,56 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body">
-                            <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
-                                <!-- Title -->
-                                <h4 class=" fw-bold text-dark">Manage User Data</h4>      
-                            </div>
+                        <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
+                            <!-- Title -->
+                            <h4 class=" fw-bold text-dark"> Payment Details</h4>
+                        </div>
                         <br>
-                     <table class="table  table-hover " id="myTable">
+                        <table class="table  table-hover " id="myTable">
 
                             <thead>
                                 <tr>
                                     <th>
-                                        Image
-                                    </th>
-
-                                    <th>
                                         Name
                                     </th>
                                     <th>
-                                        Email
+                                        Payment
                                     </th>
-                                 
                                     <th>
-                                        Action
+                                        Amount
+                                    </th>
+                                    <th>
+                                        Currency
+                                    </th>
+                                    <th>
+                                        Status
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
 
-                                @foreach ($user as $item)
-                                    <tr>
+                                @foreach ($payment as $item)
+                                    <tr class="text-capitalize">
                                         <td class="py-1">
-                                           
-                                                <img src="{{ asset('/storage/user/' . $item->image) }}">
-                                           
+
+                                            {{ $item->getcustomer->name }}
+
                                         </td>
 
                                         <td class="text-capitalize">
-                                            {{ $item->name }}
+                                            {{ $item->payment_id }}
                                         </td>
                                         <td>
-                                            {{ $item->email }}
+                                            {{ $item->amount }}
                                         </td>
-                                      
-                                            <td>
-                                                <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del mdi-24px"></i>
-                                                </a>
-                                            </td>
-                                     
+                                        <td>
+                                            {{ $item->currency }}
+                                        </td>
+                                        <td>
+                                            {{ $item->status }}
+                                        </td>
+
                                     </tr>
-                                  
                                 @endforeach
                             </tbody>
                         </table>
@@ -123,7 +123,7 @@
                         });
                 });
 
-              
+
 
             });
         </script>

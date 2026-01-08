@@ -61,7 +61,12 @@
              </div>
          </li>
 
-
+         <li class="nav-item">
+             <a class="nav-link" href="{{ route('ViewPaymentPage') }}">
+                 <span class="menu-title">Payment</span>
+                 <i class="mdi mdi-bank menu-icon"></i>
+             </a>
+         </li>
 
      </ul>
  </nav>
