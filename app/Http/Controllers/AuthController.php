@@ -59,7 +59,7 @@ class AuthController extends Controller
         return view('pages.login');
     }
 
-    
+
     public function match(Request $request)
     {
         $validate = Validator::make(
@@ -103,80 +103,98 @@ class AuthController extends Controller
 
     public function profile()
     {
-        $profile = Auth::user();
-        return view('pages.profile', compact('profile'));
+        if (Auth::check()) {
+            $profile = Auth::user();
+            return view('pages.profile', compact('profile'));
+        } else {
+            return view('pages.login');
+        }
     }
 
     public function edit()
     {
-
-        $data = User::where('id', Auth::id())->first();
-        return view('pages.update', compact('data'));
+        if (Auth::check()) {
+            $data = User::where('id', Auth::id())->first();
+            return view('pages.update', compact('data'));
+        } else {
+            return view('pages.login');
+        }
     }
 
 
     public function update(Request $request)
     {
-        $data = User::where('id', Auth::id())->first();
-        $new = $data->image;
-        $validate = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users')->ignore($data->id),
-            ],
-            'image' => 'image|mimes:png,jpg,svg'
-        ]);
+        if (Auth::check()) {
+            $data = User::where('id', Auth::id())->first();
+            $new = $data->image;
+            $validate = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => [
+                    'required',
+                    'email',
+                    Rule::unique('users')->ignore($data->id),
+                ],
+                'image' => 'image|mimes:png,jpg,svg'
+            ]);
 
-        if ($validate->fails()) {
+            if ($validate->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => $validate->errors()
+                ], 422);
+            }
+            if ($request->hasFile('image')) {
+                Storage::disk('public')->delete('user/' . $data->image);
+                $file = $request->file('image');
+                $filename = time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('user', $filename, 'public');
+                $new = $filename;
+            }
+
+            $result = $data->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'image' =>  $new
+            ]);
             return response()->json([
-                'status' => false,
-                'errors' => $validate->errors()
-            ], 422);
+                'status' => true,
+                'message' => 'Profile Updated Successfully',
+                'data' => $result
+            ]);
+        } else {
+            return view('pages.login');
         }
-        if ($request->hasFile('image')) {
-            Storage::disk('public')->delete('user/' . $data->image);
-            $file = $request->file('image');
-            $filename = time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('user', $filename, 'public');
-            $new = $filename;
-        }
-
-        $result = $data->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'image' =>  $new
-        ]);
-        return response()->json([
-            'status' => true,
-            'message' => 'Profile Updated Successfully',
-            'data' => $result
-        ]);
     }
-
     public function user()
     {
-        $user = User::all();
-        return view('pages.user', compact('user'));
+        if (Auth::check()) {
+            $user = User::all();
+            return view('pages.user', compact('user'));
+        } else {
+            return view('pages.login');
+        }
     }
     public function delete($id)
     {
-        $delete = User::where('id', $id)->first();
-        $delete->image;
+        if (Auth::check()) {
+            $delete = User::where('id', $id)->first();
+            $delete->image;
 
-        if (!$delete) {
+            if (!$delete) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Record Not Available'
+                ]);
+            }
+
+            Storage::disk('public')->delete('user/' . $delete->image);
+            $delete->delete();
             return response()->json([
-                'status' => false,
-                'message' => 'Record Not Available'
-            ]);
+                'status' => true,
+                'message' => 'Record Deleted Successfully'
+            ], 200);
+        } else {
+            return view('pages.login');
         }
-
-        Storage::disk('public')->delete('user/' . $delete->image);
-        $delete->delete();
-        return response()->json([
-            'status' => true,
-            'message' => 'Record Deleted Successfully'
-        ], 200);
     }
 }

@@ -43,6 +43,7 @@
     <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="https://cdn.datatables.net/2.3.6/js/dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>
 
 </body>
 
