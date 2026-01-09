@@ -38,7 +38,7 @@
             border: 4px solid #ddd;
             border-top: 4px solid #4b49ac;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.6s linear infinite;
             margin: 0 auto 10px;
         }
 
@@ -176,11 +176,14 @@
                             <div class="row justify-content-end">
                                 <div class="col-md-5 text-end">
 
-                                    <button type="button" id="cancel" class="btn btn-gradient-dark ms-2">
+                                    <button type="button" id="cancel" class="btn btn-sm btn-gradient-dark ms-2">
                                         Cancel
                                     </button>
-                                    <button type="button" class="btn btn-gradient-primary" id="openPaymentModal">
+                                    <button type="button" class="btn btn-gradient-primary btn-sm" id="openPaymentModal">
                                         Pay Now
+                                    </button>
+                                    <button type="button" class="btn btn-gradient-primary btn-sm" id="openPaypalModal">
+                                        PayPal
                                     </button>
                                 </div>
                             </div>
@@ -201,8 +204,7 @@
                                         </div>
 
                                         <div class="modal-body text-capitalize">
-
-                                            <div id="payment-success" class="alert alert-success text-center d-none"><br>
+                                            <div id="payment-success" class="alert alert-success text-center d-none ">
                                                 Payment completed successfully
                                             </div>
                                             <div class="loader-overlay d-none" id="paymentLoader">
@@ -251,6 +253,44 @@
                                 </div>
                             </div>
 
+                            <!-- PayPal Payment Modal -->
+                            <div class="modal fade" id="paypalModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-md">
+                                    <div class="modal-content">
+
+                                        <!-- Header -->
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-semibold">
+                                                <i class="mdi mdi-paypal"></i> PayPal Payment
+                                            </h5>
+                                            <button type="button" class="btn-close border-0"
+                                                data-bs-dismiss="modal">x</button>
+                                        </div>
+
+                                        <!-- Body -->
+                                        <div class="modal-body text-capitalize">
+
+                                            <div class="payment-summary mb-3">
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Customer :</span>
+                                                    <strong id="paypalCustomerName">-</strong>
+                                                </div>
+                                                <br>
+                                                <div class="d-flex justify-content-between">
+                                                    <span>Total :</span>
+                                                    <strong> <span id="paypalAmount">0.00</span></strong>
+                                                </div>
+                                            </div>
+
+                                            <hr>
+
+                                            <div id="paypal-button-container"></div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -264,6 +304,11 @@
     <script src="{{ asset('ajax.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.sandbox.client_id') }}&currency={{ config('services.paypal.currency') }}">
+    </script>
+
+
     <script>
         $(document).ready(function() {
 
@@ -406,7 +451,6 @@
                 calculateRow(row);
             });
 
-
             function initDatePicker() {
                 flatpickr(".event_dates", {
                     mode: "multiple",
@@ -447,7 +491,6 @@
                     }
                 });
             }
-
 
             $(document).on('click', '#add', function() {
                 let lastRow = $('.booking-row').last();
@@ -519,11 +562,12 @@
 
 
             let loaderTimeout = null;
+
             function showPaymentLoader() {
                 $('#paymentLoader').removeClass('d-none');
                 $('#confirmPayBtn').prop('disabled', true);
-                 $('#card-errors').text('');
-                loaderTimeout = setTimeout(() => {
+                $('#card-errors').text('');
+                loaderTimeout = setTimeout(function() {
                     hidePaymentLoader();
                     $('#card-errors').text('Payment taking too long. Please try again.');
                     paymentProcessing = false;
@@ -533,10 +577,10 @@
             function hidePaymentLoader() {
                 $('#paymentLoader').addClass('d-none');
                 $('#confirmPayBtn').prop('disabled', false);
-                  if (loaderTimeout) {
-        clearTimeout(loaderTimeout);
-        loaderTimeout = null;
-    }
+                if (loaderTimeout) {
+                    clearTimeout(loaderTimeout);
+                    loaderTimeout = null;
+                }
             }
 
 
@@ -633,6 +677,100 @@
                         }
                     });
             });
+
+
+
+            $('#openPaypalModal').click(function() {
+                let customerId = $('.customer').val();
+                let amount = $('#grandtotal').val();
+                let event = $('.event').val();
+                let eventdate = $('.event_dates').val();
+                let customerName = $('.customer option:selected').text();
+                $('.customererror, .eventerror, .eventdateerror, .amounterror').text('');
+                if (!customerId) {
+                    $('.customererror').text('Customer is required');
+                    return;
+                }
+                if (!event) {
+                    $('.eventerror').text('Event is required');
+                    return;
+
+                }
+                if (!eventdate) {
+                    $('.eventdateerror').text('Eventdate is required');
+                    return;
+
+                }
+                if (!amount || amount <= 0) {
+                    $('.amountrerror').text('Amount is required');
+                    return;
+                }
+
+                $('#paypalAmount').text(amount);
+                $('#paypalCustomerName').text(customerName);
+
+                $('#paypalModal').modal('show');
+
+                setTimeout(() => {
+                    renderPaypalButtons(amount, customerId);
+                }, 300);
+            });
+
+            function renderPaypalButtons(amount, customerId) {
+
+                $('#paypal-button-container').html('');
+
+                paypal.Buttons({
+
+                    createOrder: function(data, actions) {
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: {
+                                    value: amount
+                                }
+                            }]
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        return actions.order.capture().then(function(details) {
+                            let formData = new FormData($('#addform')[0]);
+                            formData.append('orderID', data.orderID);
+                            formData.append('customer_id', customerId);
+                            formData.append('grand_total', amount);
+                            $.ajax({
+                                url: "{{ route('paypal.success') }}",
+                                type: "POST",
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(response) {
+                                    console.log('message',response);
+                                    if (response.status == true) {
+                                        $('#paypalModal').modal('hide');
+                                        alert('PayPal Payment Successful');
+                                        window.location.href =
+                                            "{{ route('EventsBookViewPage') }}";
+                                    }
+                                },
+                                error: function(err) {
+                                    console.error(err);
+                                    alert(
+                                        'Something went wrong while saving payment.'
+                                    );
+                                }
+                            });
+
+                        });
+                    },
+
+                    onError: function(err) {
+                        console.error(err);
+                        alert('PayPal error occurred');
+                    }
+
+                }).render('#paypal-button-container');
+            }
+
         });
     </script>
 @endsection

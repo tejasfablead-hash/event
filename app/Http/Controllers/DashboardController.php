@@ -11,24 +11,15 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function view()
-    {
-        if (Auth::check()) {
-            $event = Event::all();
-            return view('event.view', compact('event'));
-        } else {
-            return view('pages.login');
-        }
-    }
     public function dashboard()
     {
         if (Auth::check()) {
-            $event = Event::all();
+           
             $customer = User::count();
-            $events = Event::count();
+            $event = Event::count();
             $book = Booking::count();
             $pending = Booking::where('status', 'pending')->count();
-            return view('dashboard', compact('customer', 'events', 'event', 'book', 'pending'));
+            return view('dashboard', compact('customer', 'event', 'book', 'pending'));
         } else {
             return view('pages.login');
         }

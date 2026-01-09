@@ -79,8 +79,8 @@ class StripeController extends Controller
                 'start_date'  => $startDate,
                 'end_date'    => $endDate,
                 'qty'         => $request->qty,
-                'status'      => 'pending',
                 'total'       => $request->price,
+                'status'      => 'pending',
                 'grand_total' => $request->grandtotal[0],
             ]);
 

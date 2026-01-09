@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BookingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\MultiBookingcontroller;
+use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
+use PayPalController as GlobalPayPalController;
 use PharIo\Manifest\Author;
 
 Route::get('/app', function () {
@@ -55,7 +56,10 @@ Route::controller(DashboardController::class)->group(function () {
 });
 
 Route::get('/stripe-payment', [StripeController::class, 'showPaymentForm']);
-Route::post('/stripe-payment', [StripeController::class, 'processPayment'])
-    ->name('StripePayment');
-    
-Route::get('/stripe-payment-details', [StripeController::class, 'View']) ->name('ViewPaymentPage');
+Route::post('/stripe-payment', [StripeController::class, 'processPayment'])->name('StripePayment');
+Route::get('/stripe-payment-details', [StripeController::class, 'View'])->name('ViewPaymentPage');
+
+
+Route::get('paypal/payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
+Route::post('paypal/success', [PayPalController::class, 'success'])->name('paypal.success');
+Route::get('paypal/cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
