@@ -28,7 +28,7 @@
                         <div class="card-body">
                             <img src="images/dashboard/circle.svg" class="card-img-absolute" alt="">
                             <h4>Total Events</h4>
-                            <h2>{{ $events }}</h2>
+                            <h2>{{ $event }}</h2>
                         </div>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            
+            {{--             
             <div class="row">
                 <div class="col-12 grid-margin">
                     <div class="card">
@@ -173,13 +173,41 @@
                         </div>
                     </div>
                 </div>
+            </div> --}}
+
+        </div>
+<!-- Simple Event Modal -->
+<div class="modal fade text-capitalize" id="eventModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Event Details</h4>
+                <button type="button" class="close sm" data-bs-dismiss="modal">
+                    <span>x</span>&nbsp;
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p><strong>Event : </strong> <span id="m_event">-</span></p>
+                <p><strong>Customer : </strong> <span id="m_customer">-</span></p>
+                <p><strong>Quantity : </strong> <span id="m_qty">-</span></p>
+                <p><strong>Start Date : </strong> <span id="m_start">-</span></p>
+                <p><strong>End Date : </strong> <span id="m_end">-</span></p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+                    Close
+                </button>
             </div>
 
         </div>
+    </div>
+</div>
 
         @include('footer')
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -188,7 +216,7 @@
 
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                contentHeight: 400,
+                contentHeight: 500,
 
                 headerToolbar: {
                     left: 'prev,next today',
@@ -202,12 +230,18 @@
                 },
 
                 eventClick: function(info) {
-                    let e = info.event;
-                    document.getElementById('m_customer').innerText = e.extendedProps.customer;
-                    document.getElementById('m_event').innerText = e.extendedProps.event;
-                    document.getElementById('m_qty').innerText = e.extendedProps.qty;
-                    document.getElementById('m_start').innerText = e.startStr;
-                    document.getElementById('m_end').innerText = e.endStr ?? '-';
+                    if (!info.event) {
+                        console.error('No event object found', info);
+                        return;
+                    }
+
+                    let props = info.event.extendedProps || {};
+
+                    document.getElementById('m_customer').innerText = props.customer ?? '-';
+                    document.getElementById('m_event').innerText = props.event ?? '-';
+                    document.getElementById('m_qty').innerText = props.qty ?? '-';
+                    document.getElementById('m_start').innerText = info.event.startStr ?? '-';
+                    document.getElementById('m_end').innerText = info.event.endStr ?? '-';
 
                     $('#eventModal').modal('show');
                 }

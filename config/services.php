@@ -34,9 +34,27 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'paypal' => [
+        'mode' => env('PAYPAL_MODE', 'sandbox'),
+
+        'sandbox' => [
+            'client_id' => env('PAYPAL_SANDBOX_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_SANDBOX_CLIENT_SECRET'),
+        ],
+
+        'live' => [
+            'client_id' => env('PAYPAL_LIVE_CLIENT_ID'),
+            'client_secret' => env('PAYPAL_LIVE_CLIENT_SECRET'),
+        ],
+
+        'currency' => env('PAYPAL_CURRENCY', 'USD'),
+    ],
+
+
     'stripe' => [
-        'key' => env('STRIPE_KEY'),
+        'key'    => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+
 
 ];
