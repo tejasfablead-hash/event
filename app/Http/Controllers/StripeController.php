@@ -11,10 +11,7 @@ use Stripe\Stripe;
 
 class StripeController extends Controller
 {
-    public function showPaymentForm()
-    {
-        return view('book.insert');
-    }
+    
 
     public function processPayment(Request $request)
     {
@@ -23,6 +20,7 @@ class StripeController extends Controller
             'event.*'       => 'required',
             'eventdate.*'   => 'required',
             'qty.*'         => 'required|numeric|min:1',
+            'method' => 'required',
             'stripeToken' => 'required',
         ], [
             'event.*.required'     => 'Event is required',
@@ -61,6 +59,7 @@ class StripeController extends Controller
                 'payment_id' => $charge->id,
                 'amount'     => $amount,
                 'currency'   => 'inr',
+                'method'     => $request->method,
                 'status'     => $charge->status,
             ]);
 
