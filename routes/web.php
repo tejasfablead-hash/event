@@ -55,11 +55,9 @@ Route::controller(DashboardController::class)->group(function () {
     Route::get('/dashboard/event', 'events')->name('DashboardEventPage');
 });
 
-Route::get('/stripe-payment', [StripeController::class, 'showPaymentForm']);
 Route::post('/stripe-payment', [StripeController::class, 'processPayment'])->name('StripePayment');
 Route::get('/stripe-payment-details', [StripeController::class, 'View'])->name('ViewPaymentPage');
 
-
-Route::get('paypal/payment', [PayPalController::class, 'createPayment'])->name('paypal.payment');
-Route::post('paypal/success', [PayPalController::class, 'success'])->name('paypal.success');
-Route::get('paypal/cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
+Route::post('/paypal/store', [PayPalController::class, 'store'])
+    ->name('paypal.store');
+Route::get('/paypal/cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');

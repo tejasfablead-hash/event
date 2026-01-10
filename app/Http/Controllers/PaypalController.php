@@ -5,58 +5,66 @@ namespace App\Http\Controllers;
 use App\Models\Booking;
 use App\Models\Payment;
 use Illuminate\Http\Request;
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class PayPalController extends Controller
 {
-    public function success(Request $request)
+    
+    public function store(Request $request)
     {
-        try {
+        $request->validate([
+            'orderID' => 'required',
+            'transaction_id'  => 'required',
+            'grand_total'     => 'required|numeric',
+            'currency'        => 'required',
+            'customer'        => 'required',
+            'method' => 'required',
+            'event.*'       => 'required',
+            'eventdate.*'   => 'required',
+            'qty.*'         => 'required|numeric|min:1',
+        ], [
+            'event.*.required'     => 'Event is required',
+            'eventdate.*.required' => 'Event date is required',
+            'qty.*.required'       => 'Quantity is required',
+        ]);
+
             $payment = Payment::create([
-                'user_id'       => $request->customer_id,
-                'payment_id'    => $request->orderID,
-                'amount'        => $request->grand_total,
-                'currency'      => 'USD',
-                'status'        => 'completed',
+                'user_id'         => $request->customer,
+                'payment_id'      => $request->transaction_id,
+                'amount'          => $request->grand_total,
+                'currency'        => $request->currency,
+                'method'          => $request->method,
+                'status'          => 'COMPLETED',
             ]);
 
-            $events     = $request->input('event');       // array of event IDs
-            $startDates = $request->input('eventdate');  // array of start dates
-            $qtys       = $request->input('qty');        // array of quantities
-            $totals     = $request->input('total');      // array of totals
+            $startDate = [];
+            $endDate   = [];
 
-            $booking = Booking::create([
-                'customer'    => $request->customer_id,
-                'event'       => $events,
-                'start_date'  => $startDates,
-                'end_date'    => $startDates, // if single date
-                'qty'         => $qtys,
-                'total'       => $totals,
-                'grand_total' => $request->grand_total,
+            foreach ($request->eventdate as $dateRange) {
+                $dates = explode(',', $dateRange);
+                $startDate[] = trim($dates[0]);
+                $endDate[]   = trim($dates[1] ?? $dates[0]);
+            }
+
+            Booking::create([
+                'customer'    => $request->customer,
+                'event'       => $request->event,
+                'start_date'  => $startDate,
+                'end_date'    => $endDate,
+                'qty'         => $request->qty,
+                'total'       => $request->price,
                 'status'      => 'pending',
+                'grand_total' => $request->grandtotal[0],
             ]);
 
             return response()->json([
-                'status'  => true,
-                'message' => 'Payment and Booking stored successfully',
-                'payment' => $payment,
-                'booking' => $booking,
+                'status' => true,
+                'message' => 'Payment & Booking stored successfully'
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => false,
-                'message' => 'Something went wrong',
-                'error'   => $e->getMessage(),
-            ], 500);
-        }
+       
     }
-
 
     public function cancel()
     {
-        return response()->json([
-            'status'  => false,
-            'message' => 'Payment Cancelled!',
-        ]);
+        return redirect('/')->with('error', 'Payment cancelled');
     }
 }

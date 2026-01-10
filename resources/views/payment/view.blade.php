@@ -33,7 +33,10 @@
                                         Name
                                     </th>
                                     <th>
-                                        Payment
+                                        Payment Method
+                                    </th>
+                                    <th>
+                                        Payment_Id
                                     </th>
                                     <th>
                                         Amount
@@ -55,7 +58,9 @@
                                             {{ $item->getcustomer->name }}
 
                                         </td>
-
+                                        <td class="text-capitalize">
+                                            {{ $item->method }}
+                                        </td>
                                         <td class="text-capitalize">
                                             {{ $item->payment_id }}
                                         </td>

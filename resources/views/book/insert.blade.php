@@ -180,10 +180,10 @@
                                         Cancel
                                     </button>
                                     <button type="button" class="btn btn-gradient-primary btn-sm" id="openPaymentModal">
-                                        Pay Now
+                                        Stripe Pay
                                     </button>
                                     <button type="button" class="btn btn-gradient-primary btn-sm" id="openPaypalModal">
-                                        PayPal
+                                        PayPal Pay
                                     </button>
                                 </div>
                             </div>
@@ -285,6 +285,9 @@
                                             <hr>
 
                                             <div id="paypal-button-container"></div>
+                                            <div id="paypal-message-container"
+                                                class="alert alert-success d-none text-center"></div>
+                                            <div id="messages"class="text-center d-none alert alert-danger"></div>
                                         </div>
 
                                     </div>
@@ -620,6 +623,7 @@
             });
 
             let paymentProcessing = false;
+
             const stripe = Stripe("{{ config('services.stripe.key') }}");
             const elements = stripe.elements();
             const card = elements.create('card');
@@ -642,6 +646,7 @@
                 let formData = new FormData($('#addform')[0]);
                 formData.append('stripeToken', token.id);
                 formData.append('amount', $('#grandtotal').val());
+                formData.append('method', 'Stripe');
                 var url = "{{ route('StripePayment') }}";
                 reusableAjaxCall(url, 'POST', formData,
 
@@ -678,9 +683,8 @@
                     });
             });
 
-
-
             $('#openPaypalModal').click(function() {
+
                 let customerId = $('.customer').val();
                 let amount = $('#grandtotal').val();
                 let event = $('.event').val();
@@ -706,6 +710,7 @@
                     return;
                 }
 
+
                 $('#paypalAmount').text(amount);
                 $('#paypalCustomerName').text(customerName);
 
@@ -726,46 +731,89 @@
                         return actions.order.create({
                             purchase_units: [{
                                 amount: {
-                                    value: amount
+                                    value: $('#grandtotal').val()
                                 }
                             }]
                         });
                     },
                     onApprove: function(data, actions) {
                         return actions.order.capture().then(function(details) {
+                            const capture = details.purchase_units[0].payments.captures[0];
+
                             let formData = new FormData($('#addform')[0]);
                             formData.append('orderID', data.orderID);
-                            formData.append('customer_id', customerId);
+                            formData.append('transaction_id', capture.id);
+                            formData.append('customer', customerId);
                             formData.append('grand_total', amount);
+                            formData.append('method', 'Paypal');
+                            formData.append('currency', capture.amount.currency_code);
+
                             $.ajax({
-                                url: "{{ route('paypal.success') }}",
+                                url: "{{ route('paypal.store') }}",
                                 type: "POST",
                                 data: formData,
                                 processData: false,
                                 contentType: false,
                                 success: function(response) {
-                                    console.log('message',response);
+                                    console.log('message', response);
                                     if (response.status == true) {
-                                        $('#paypalModal').modal('hide');
-                                        alert('PayPal Payment Successful');
-                                        window.location.href =
-                                            "{{ route('EventsBookViewPage') }}";
+                                        $('#paypal-button-container').hide();
+                                        $('#paypal-message-container')
+                                            .removeClass('d-none')
+                                            .html(
+                                                ' PayPal Payment Successful! Booking confirmed.'
+                                            );
+                                        $('#addform')[0].reset();
+                                        setTimeout(function() {
+                                            $('#paypalModal').modal('hide');
+                                            window.location.href =
+                                                "{{ route('EventsBookViewPage') }}";
+                                        }, 3000);
+
                                     }
                                 },
-                                error: function(err) {
-                                    console.error(err);
-                                    alert(
-                                        'Something went wrong while saving payment.'
-                                    );
+                                error: function(error) {
+
+                                    if (error.status !== 422) return;
+
+                                    let errors = error.responseJSON.errors;
+
+                                    $('.error').text('');
+                                    $('.customererror').text('');
+
+                                    $('#paypalModal').modal('hide');
+
+
+                                    for (let key in errors) {
+
+                                        if (key.includes('.')) {
+                                            let parts = key.split('.');
+                                            let field = parts[0];
+                                            let index = parts[1];
+
+                                            $('.booking-row')
+                                                .eq(index)
+                                                .find('.' + field + 'error')
+                                                .text(errors[key][0]);
+                                        } else {
+                                            $('.' + key + 'error').text(errors[key][
+                                                0
+                                            ]);
+                                        }
+                                    }
                                 }
+
                             });
 
                         });
                     },
 
                     onError: function(err) {
-                        console.error(err);
-                        alert('PayPal error occurred');
+
+                        setTimeout(function() {
+                            $('#messages').removeClass('d-none').addClass('text-danger').html(
+                                'PayPal error occurred');
+                        }, 2000);
                     }
 
                 }).render('#paypal-button-container');
