@@ -21,9 +21,15 @@
               <li class="nav-item nav-profile dropdown">
                   <a class="nav-link dropdown-toggle" id="profileDropdown" href="" data-toggle="dropdown"
                       aria-expanded="false">
-                      <div class="nav-profile-img">
-                          <img src="{{ asset('storage/user/' . Auth()->user()->image) }}" class="img-lg rounded-circle">
 
+                      <div class="nav-profile-img">
+                          @if (Auth::check() && Auth::user()->image)
+                              <img src="{{ asset('storage/user/' . Auth()->user()->image) }}"
+                                  class="img-lg rounded-circle">
+                          @else
+                              <img src="{{ asset('images/faces/face1.jpg') }}" class="img-lg rounded-circle"
+                                  alt="Default User">
+                          @endif
                           <span class="availability-status online"></span>
                       </div>
                       <div class="nav-profile-text">

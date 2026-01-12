@@ -4,7 +4,7 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Purple Admin</title>
     <!-- plugins:css -->
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="../../css/style.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="../../images/favicon.png" />
+
 </head>
 
 <body>
@@ -38,13 +39,13 @@
                                         placeholder="enter email" aria-describedby="emailHelp">
                                     <span class="text-danger error" id="email_error"></span>
                                 </div>
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label for="exampleInputPassword1" class="form-label">Password</label>
                                     <input type="password" name="password" class="form-control"
                                         placeholder="enter password" id="exampleInputPassword1">
                                     <span class="text-danger error" id="password_error"></span>
                                 </div>
-                                <div class="d-flex align-items-center justify-content-between mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
                                     <div class="form-check">
                                         <input class="form-check-input primary" type="checkbox" value=""
                                             id="flexCheckChecked" checked>
@@ -55,14 +56,36 @@
                                     <a class="text-primary fw-bold" href="#">Forgot Password ?</a>
                                 </div>
                                 <input type="submit" name="submit"
-                                    class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" value="Sign In">
+                                    class="btn btn-primary w-100 py-8 fs-4 mb-1 rounded-2" value="Sign In">
+
+                                <hr class="my-2">
+                                <div class="text-center">
+                                    <p>or sign up with:</p>
+                                    <button type="button" data-mdb-button-init data-mdb-ripple-init
+                                        class="btn btn-link btn-floating mx-1">
+                                        <a href="{{ route('google.login') }}"><i class="mdi mdi-google "></i></a>
+                                    </button>
+
+                                    <button type="button" data-mdb-button-init data-mdb-ripple-init
+                                        class="btn btn-link btn-floating mx-1">
+                                     <i class="mdi mdi-facebook"></i>
+                                    </button>
+
+
+                                </div>
 
                             </form>
-                            <div class="text-center mt-2 font-weight-light">
-                                You have no account? <a href="{{ route('RegisterPage') }}" class="text-primary">Register
+
+                            <hr class="my-1">
+
+                            <div class="text-center mt-1  font-weight-light">
+                                You have no account? <a href="{{ route('RegisterPage') }}"
+                                    class="mt-1 text-primary">Register
                                 </a>
                             </div>
-                            <div id="loginError" class="alert alert-danger mt-2 text-center d-none" role="alert"></div>
+
+                            <div id="loginError" class="alert alert-danger mt-2 text-center d-none" role="alert">
+                            </div>
                             <div id="loginSuccess" class="alert alert-success mt-2 text-center d-none" role="alert">
                             </div>
                         </div>
@@ -107,7 +130,7 @@
                             .fadeIn();
 
                         setTimeout(function() {
-                            window.location.href = "{{route('DashboardPage')}}";
+                            window.location.href = "{{ route('DashboardPage') }}";
                         }, 2000);
 
                     } else {

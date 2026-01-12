@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FacebookController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MultiBookingcontroller;
 use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\StripeController;
@@ -58,6 +60,13 @@ Route::controller(DashboardController::class)->group(function () {
 Route::post('/stripe-payment', [StripeController::class, 'processPayment'])->name('StripePayment');
 Route::get('/stripe-payment-details', [StripeController::class, 'View'])->name('ViewPaymentPage');
 
-Route::post('/paypal/store', [PayPalController::class, 'store'])
-    ->name('paypal.store');
+Route::post('/paypal/store', [PayPalController::class, 'store'])->name('paypal.store');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
+
+Route::middleware(['web'])->group(function () {
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+});
+
+Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('facebook.login');
+Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
