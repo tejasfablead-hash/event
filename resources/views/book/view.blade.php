@@ -36,7 +36,6 @@
                         <table class="table table-bordered bordered-3 table-striped text-capitalize" id="myTable">
                             <thead class="table-bordered bordered-3">
                                 <tr>
-                                    <th>#</th>
                                     <th>Customer</th>
                                     <th>Event</th>
                                     <th>Qty</th>
@@ -50,7 +49,6 @@
                                 @php $count = 1; @endphp
                                 @foreach ($book as $item)
                                     <tr class="table">
-                                        <td>{{ $count++ }}</td>
                                         <td>{{ $item->getcustomer->name }}</td>
 
                                         <td>
