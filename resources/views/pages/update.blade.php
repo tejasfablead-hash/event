@@ -4,8 +4,8 @@
         <div class="content-wrapper">
             <div class="page-header">
                 <h6 class="page-title">
-                    
-                   <div id="message" class="alert alert-success text-center d-none" role="alert"></div>
+
+                    <div id="message" class="alert alert-success text-center d-none" role="alert"></div>
                 </h6>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -26,8 +26,13 @@
                                 <div class="card shadow-sm rounded-4 text-center">
                                     <div class="card-body">
 
-                                        <img src="{{ asset('storage/user/' . $data->image) }}" class="rounded-circle mb-3"
-                                            width="120" height="120" alt="User">
+                                        @if (!empty(auth()->user()->image))
+                                            <img src="{{ asset('storage/user/' . auth()->user()->image) }}"
+                                                class="rounded-circle mb-3" width="120" height="120" alt="User">
+                                        @else
+                                            <img src="{{ asset('images/faces/face1.jpg') }}" class="img-lg rounded-circle"
+                                                alt="Default User">
+                                        @endif
 
                                         <h5 class="fw-bold mb-1 text-capitalize">{{ $data->name }}</h5>
                                         <p class="text-muted mb-2">{{ $data->email }}</p>
@@ -79,8 +84,15 @@
                                                 <div class="col-md-6">
                                                     <label class="text-muted ">Image</label>
                                                     <input type="file" name="image" class="form-control"
-                                                        value="">
-
+                                                        value=""><br>
+                                                    @if (!empty(auth()->user()->image))
+                                                        <img src="{{ asset('storage/user/' . auth()->user()->image) }}"
+                                                            class="rounded-circle mb-3" width="50" height="50"
+                                                            alt="User">
+                                                    @else
+                                                        <img src="{{ asset('images/faces/face1.jpg') }}"
+                                                            class=" rounded-circle" alt="Default User"  width="50" height="50">
+                                                    @endif
                                                     <span class="text-danger error" id="image_error"></span>
                                                 </div>
                                                 <div class="col-md-6">
@@ -93,7 +105,7 @@
 
                                         </div>
                                     </form>
-                                    
+
                                 </div>
                             </div>
 

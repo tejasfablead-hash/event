@@ -74,6 +74,7 @@
 
                                     <!-- BOOKING DETAILS -->
                                     <h5 class="mb-2">📅 Booking Details</h5>
+                                    &nbsp;&nbsp;
                                     <div class="row mb-3">
                                         <div class="col-sm-6">
                                             <p><strong>Start Date:</strong> {{ $data->start_date[0] ?? '-' }}</p>
@@ -100,9 +101,11 @@
 
                                     <!-- CUSTOMER DETAILS -->
                                     <h5 class="mb-2">👤 Customer Details</h5>
+                                    &nbsp;&nbsp;
                                     <div class="d-flex align-items-center mb-3">
                                         <img src="{{ asset('storage/user/' . $data->getcustomer->image) }}"
                                             class="rounded-circle me-3" style="width:60px;height:60px;object-fit:cover;">
+                                            &nbsp;&nbsp;&nbsp;
                                         <div>
                                             <p class="mb-0 fw-bold text-capitalize">{{ $data->getcustomer->name }}</p>
                                             <p class="text-muted mb-0">{{ $data->getcustomer->email }}</p>

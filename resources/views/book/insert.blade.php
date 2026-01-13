@@ -185,6 +185,9 @@
                                     <button type="button" class="btn btn-gradient-primary btn-sm" id="openPaypalModal">
                                         PayPal Pay
                                     </button>
+                                    <button type="button" class="btn btn-gradient-primary btn-sm" id="openRazorModal">
+                                        RazorPay
+                                    </button>
                                 </div>
                             </div>
 
@@ -294,6 +297,8 @@
                                 </div>
                             </div>
 
+
+
                         </form>
                     </div>
                 </div>
@@ -307,6 +312,7 @@
     <script src="{{ asset('ajax.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script
         src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.sandbox.client_id') }}&currency={{ config('services.paypal.currency') }}">
     </script>
@@ -648,9 +654,7 @@
                 formData.append('amount', $('#grandtotal').val());
                 formData.append('method', 'Stripe');
                 var url = "{{ route('StripePayment') }}";
-                reusableAjaxCall(url, 'POST', formData,
-
-                    function(response) {
+                reusableAjaxCall(url, 'POST', formData, function(response) {
                         hidePaymentLoader();
                         if (response.status == true) {
                             $('#card-element').hide();
@@ -818,6 +822,94 @@
 
                 }).render('#paypal-button-container');
             }
+
+
+            $('#openRazorModal').click(function() {
+
+                let amount = $('#grandtotal').val();
+                let customerId = $('.customer').val();
+                let event = $('.event').val();
+                let eventdate = $('.event_dates').val();
+                let customerName = $('.customer option:selected').text();
+                $('.customererror, .eventerror, .eventdateerror, .amounterror').text('');
+
+                if (!customerId) {
+                    $('.customererror').text('Customer is required');
+                    return;
+                }
+                if (!event) {
+                    $('.eventerror').text('Event is required');
+                    return;
+
+                }
+                if (!eventdate) {
+                    $('.eventdateerror').text('Eventdate is required');
+                    return;
+
+                }
+                if (!amount || amount <= 0) {
+                    $('.amountrerror').text('Amount is required');
+                    return;
+                }
+
+                var url = "{{ route('razorpay.create') }}";
+                let formData = new FormData();
+                formData.append('_token', "{{ csrf_token() }}");
+                formData.append('amount', amount);
+              
+                reusableAjaxCall(url, 'POST', formData, function(res) {
+                    let options = {
+                        key: res.key,
+                        amount: res.amount ,
+                        name: "Event",
+                        description: "Event Payment",
+                        order_id: res.order_id,
+                        currency: res.currency,
+                        handler: function(response) {
+                            let formData = new FormData($('#addform')[0]);
+                            formData.append('razorpay_payment_id', response
+                                .razorpay_payment_id);
+                            formData.append('razorpay_order_id', response
+                                .razorpay_order_id);
+                            formData.append('razorpay_signature', response
+                                .razorpay_signature);
+                            formData.append('method', 'Razorpay');
+                            formData.append('currency', res.currency);
+                            formData.append('amount', amount);
+                            var url = "{{ route('razorpay.verify') }}";
+                            reusableAjaxCall(url, 'POST', formData, function(
+                                    response) {
+                                    $('#addform')[0].reset();
+                                    window.location.href =
+                                        "{{ route('EventsBookViewPage') }}";
+                                },
+                                function(error) {
+                                    if (error.status !== 422) return;
+                                    let errors = error.responseJSON.errors;
+                                    $('.error').text('');
+                                    $('.customererror').text('');
+                                    for (let key in errors) {
+                                        let [field, index] = key.split('.');
+                                        $('.booking-row')
+                                            .eq(index)
+                                            .find('.' + field + 'error')
+                                            .text(errors[key][0]);
+                                    }
+                                });
+                        },
+                        prefill: {
+                            name: customerName
+                        },
+                        theme: {
+                            color: "#4b49ac"
+                        }
+                    };
+                    let rzp = new Razorpay(options);
+                    rzp.open();
+                });
+
+            });
+
 
         });
     </script>
