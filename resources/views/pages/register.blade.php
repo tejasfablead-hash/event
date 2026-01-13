@@ -12,6 +12,22 @@
     <link rel="stylesheet" href="{{ asset('vendors/css/vendor.bundle.base.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
+    <style>
+        .password-toggle {
+            position: absolute;
+            top: 70%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 20px;
+        }
+
+        .password-toggle:hover {
+            color: #4B49AC;
+            /* Purple Admin primary color */
+        }
+    </style>
 </head>
 
 <body>
@@ -37,10 +53,13 @@
                                         placeholder="enter email" aria-describedby="emailHelp">
                                     <span class="text-danger error" id="email_error"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label for="exampleInputPassword1" class="form-label">Password</label>
-                                    <input type="password" name="password" class="form-control"
-                                        placeholder="enter password" id="exampleInputPassword1">
+                                <div class="form-group position-relative">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                        placeholder="Enter password">
+                                    <span class="password-toggle" onclick="togglePassword()">
+                                        <i id="toggleIcon" class="mdi mdi-eye"></i>
+                                    </span>
                                     <span class="text-danger error" id="password_error"></span>
                                 </div>
                                 <div class="form-group">
@@ -66,69 +85,101 @@
                                     <input type="submit" name="submit" value="SIGN UP"
                                         class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" />
                                 </div>
-                                <div class="text-center mt-4 font-weight-light">
-                                    Already have an account? <a href="{{ route('LoginPage') }}"
-                                        class="text-primary">Login</a>
-                                </div>
-                                <div id="regError" class="alert alert-danger  mt-2 text-center d-none" role="alert"></div>
-                                <div id="regSuccess" class="alert alert-success mt-2 text-center d-none" role="alert">
 
                             </form>
+
+                            <hr class="my-2">
+                            <div class="text-center">
+                                <p>or sign in with:</p>
+                                <a href="{{ route('google.login') }}" class="btn btn-link btn-floating mx-1">
+                                    <i class="mdi mdi-google"></i>
+                                </a>
+                                <a href="{{ route('facebook.login') }}" class="btn btn-link btn-floating mx-1">
+                                    <i class="mdi mdi-facebook"></i>
+                                </a>
+
+                            </div>
+                            <hr class="my-1">
+                            <div class="text-center mt-4 font-weight-light">
+                                Already have an account? <a href="{{ route('LoginPage') }}"
+                                    class="text-primary">Login</a>
+                            </div>
+                            <div id="regError" class="alert alert-danger  mt-2 text-center d-none" role="alert">
+                            </div>
+                            <div id="regSuccess" class="alert alert-success mt-2 text-center d-none" role="alert">
+
+                            </div>
                         </div>
                     </div>
                 </div>
+                <!-- content-wrapper ends -->
             </div>
-            <!-- content-wrapper ends -->
+            <!-- page-body-wrapper ends -->
         </div>
-        <!-- page-body-wrapper ends -->
-    </div>
 
-    <script src="{{ asset('vendors/js/vendor.bundle.base.js') }}"></script>
-    <script src="{{ asset('vendors/js/vendor.bundle.addons.js') }}"></script>
-    <script src="{{ asset('js/off-canvas.js') }}"></script>
-    <script src="{{ asset('js/misc.js') }}"></script>
-    <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="{{ asset('vendors/js/vendor.bundle.base.js') }}"></script>
+        <script src="{{ asset('vendors/js/vendor.bundle.addons.js') }}"></script>
+        <script src="{{ asset('js/off-canvas.js') }}"></script>
+        <script src="{{ asset('js/misc.js') }}"></script>
+        <script src="{{ asset('js/dashboard.js') }}"></script>
+        <script src="http://structureless-brice-abruptly.ngrok-free.dev/ajax.js"></script>
+        <script src="{{ asset('ajax.js') }}"></script>
+        <script>
+            $(document).ready(function() {
 
-    <script src="{{ asset('ajax.js') }}"></script>
-    <script>
-        $(document).ready(function() {
+                $('#registerform').submit(function(e) {
+                    e.preventDefault();
 
-            $('#registerform').submit(function(e) {
-                e.preventDefault();
+                    let formData = new FormData(this);
+                    let url = "{{ route('RegisterAddPage') }}";
 
-                let formData = new FormData(this);
-                let url = "{{ route('RegisterAddPage') }}";
+                    $('.error').text('');
+                    $('#regError').addClass('d-none').html('');
+                    $('#regSuccess').addClass('d-none').html('');
 
-                $('.error').text('');
-                $('#regError').addClass('d-none').html('');
-                $('#regSuccess').addClass('d-none').html('');
+                    reusableAjaxCall(url, 'POST', formData, function(response) {
+                        if (response.status === true) {
+                            $('#regSuccess')
+                                .removeClass('d-none')
+                                .html(response.message)
+                                .fadeIn();
+                            setTimeout(function() {
+                                window.location.href = "{{ route('LoginPage') }}";
+                            }, 2000);
 
-                reusableAjaxCall(url, 'POST', formData, function(response) {
-                    if (response.status === true) {
-                        $('#regSuccess')
-                            .removeClass('d-none')
-                            .html(response.message)
-                            .fadeIn();  
-                        setTimeout(function() {
-                            window.location.href = "{{route('LoginPage')}}";
-                        }, 2000);
+                        } else {
+                            $('#regError')
+                                .removeClass('d-none')
+                                .html(response.message)
+                                .fadeIn();
 
-                    } else {
-                        $('#regError')
-                            .removeClass('d-none')
-                            .html(response.message)
-                            .fadeIn();
-
-                        setTimeout(function() {
-                            $('#regError').fadeOut(function() {
-                                $(this).addClass('d-none').html('').show();
-                            });
-                        }, 3000);
-                    }
+                            setTimeout(function() {
+                                $('#regError').fadeOut(function() {
+                                    $(this).addClass('d-none').html('').show();
+                                });
+                            }, 3000);
+                        }
+                    });
                 });
             });
-        });
-    </script>
+        </script>
+        <script>
+            function togglePassword() {
+                const passwordInput = document.getElementById('password');
+                const icon = document.getElementById('toggleIcon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        </script>
+
 </body>
 
 </html>

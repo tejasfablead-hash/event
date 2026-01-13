@@ -1,8 +1,8 @@
 @extends('index')
 @section('container')
-<style>
-    
-</style>
+    <style>
+
+    </style>
     <div class="main-panel">
         <div class="content-wrapper">
             <div class="page-header">
@@ -20,12 +20,12 @@
             <div class="col-lg-12 grid-margin stretch-card">
                 <div class="card shadow-sm rounded-4">
                     <div class="card-body">
-                            <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
-                                <!-- Title -->
-                                <h4 class=" fw-bold text-dark">Manage User Data</h4>      
-                            </div>
+                        <div class="bg-white d-flex flex-wrap justify-content-between align-items-center">
+                            <!-- Title -->
+                            <h4 class=" fw-bold text-dark">Manage User Data</h4>
+                        </div>
                         <br>
-                     <table class="table  table-hover " id="myTable">
+                        <table class="table  table-hover " id="myTable">
 
                             <thead>
                                 <tr>
@@ -39,7 +39,7 @@
                                     <th>
                                         Email
                                     </th>
-                                 
+
                                     <th>
                                         Action
                                     </th>
@@ -50,9 +50,13 @@
                                 @foreach ($user as $item)
                                     <tr>
                                         <td class="py-1">
-                                           
-                                                <img src="{{ asset('/storage/user/' . $item->image) }}">
-                                           
+                                            @if (!empty($item->image))
+                                                <img src="{{ asset('storage/user/' . $item->image) }}"
+                                                    class="img-lg rounded-circle" alt="User Image">
+                                            @else
+                                                <img src="{{ asset('images/faces/face1.jpg') }}"
+                                                    class="img-lg rounded-circle" alt="Default User">
+                                            @endif
                                         </td>
 
                                         <td class="text-capitalize">
@@ -61,15 +65,15 @@
                                         <td>
                                             {{ $item->email }}
                                         </td>
-                                      
-                                            <td>
-                                                <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
-                                                    data-id="{{ $item->id }}"><i class="mdi mdi-delete btn-del mdi-24px"></i>
-                                                </a>
-                                            </td>
-                                     
+
+                                        <td>
+                                            <a href="javascript:void(0)" class=" text-decoration-none  text-danger"
+                                                data-id="{{ $item->id }}"><i
+                                                    class="mdi mdi-delete btn-del mdi-24px"></i>
+                                            </a>
+                                        </td>
+
                                     </tr>
-                                  
                                 @endforeach
                             </tbody>
                         </table>
@@ -123,7 +127,7 @@
                         });
                 });
 
-              
+
 
             });
         </script>

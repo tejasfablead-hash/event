@@ -7,6 +7,7 @@ use App\Http\Controllers\FacebookController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MultiBookingcontroller;
 use App\Http\Controllers\PaypalController;
+use App\Http\Controllers\RazorPayController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 use PayPalController as GlobalPayPalController;
@@ -53,8 +54,8 @@ Route::controller(MultiBookingcontroller::class)->group(function () {
 });
 
 Route::controller(DashboardController::class)->group(function () {
-    Route::get('/dashboard', 'dashboard')->name('DashboardPage');
-    Route::get('/dashboard/event', 'events')->name('DashboardEventPage');
+    Route::get('/dashboard', 'dashboard')->name('DashboardPage')->middleware('auth');
+    Route::get('/dashboard/event', 'events')->name('DashboardEventPage')->middleware('auth');
 });
 
 Route::post('/stripe-payment', [StripeController::class, 'processPayment'])->name('StripePayment');
@@ -63,10 +64,14 @@ Route::get('/stripe-payment-details', [StripeController::class, 'View'])->name('
 Route::post('/paypal/store', [PayPalController::class, 'store'])->name('paypal.store');
 Route::get('/paypal/cancel', [PayPalController::class, 'cancel'])->name('paypal.cancel');
 
-Route::middleware(['web'])->group(function () {
-    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
-    Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
-});
+Route::post('/razorpay/create-order', [RazorPayController::class, 'createOrder'])
+    ->name('razorpay.create');
+Route::post('/razorpay/verify-payment', [RazorpayController::class, 'verifyPayment'])
+    ->name('razorpay.verify');
 
-Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('facebook.login');
-Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
+Route::middleware(['web'])->group(function () {
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+Route::get('login/facebook', [FacebookController::class, 'redirectToFacebook'])->name('facebook.login');
+Route::get('login/facebook/callback', [FacebookController::class, 'handleFacebookCallback'])->name('facebook.callback');
+});

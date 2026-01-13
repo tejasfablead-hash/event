@@ -17,6 +17,22 @@
     <link rel="stylesheet" href="../../css/style.css">
     <!-- endinject -->
     <link rel="shortcut icon" href="../../images/favicon.png" />
+    <style>
+        .password-toggle {
+            position: absolute;
+            top: 70%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 20px;
+        }
+
+        .password-toggle:hover {
+            color: #4B49AC;
+            /* Purple Admin primary color */
+        }
+    </style>
 
 </head>
 
@@ -39,42 +55,42 @@
                                         placeholder="enter email" aria-describedby="emailHelp">
                                     <span class="text-danger error" id="email_error"></span>
                                 </div>
-                                <div class="mb-2">
-                                    <label for="exampleInputPassword1" class="form-label">Password</label>
-                                    <input type="password" name="password" class="form-control"
-                                        placeholder="enter password" id="exampleInputPassword1">
-                                    <span class="text-danger error" id="password_error"></span>
+                                <div class="form-group position-relative">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" id="password" name="password" class="form-control"
+                                        placeholder="Enter password">
+                                    <span class="password-toggle" onclick="togglePassword()">
+                                        <i id="toggleIcon" class="mdi mdi-eye"></i>
+                                    </span>
                                 </div>
+                                <span class="text-danger error" id="password_error"></span>
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <div class="form-check">
-                                        <input class="form-check-input primary" type="checkbox" value=""
-                                            id="flexCheckChecked" checked>
+                                         <label class="form-check-label text-muted">
+                                            <input type="checkbox" class="form-check-input">
+                                           Remeber this Device 
+                                        </label>
                                         <!-- <label class="form-check-label text-dark" for="flexCheckChecked"> -->
-                                        Remeber this Device
+                                        
                                         <!-- </label> -->
                                     </div>
                                     <a class="text-primary fw-bold" href="#">Forgot Password ?</a>
                                 </div>
                                 <input type="submit" name="submit"
                                     class="btn btn-primary w-100 py-8 fs-4 mb-1 rounded-2" value="Sign In">
-
-                                <hr class="my-2">
-                                <div class="text-center">
-                                    <p>or sign up with:</p>
-                                    <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                        class="btn btn-link btn-floating mx-1">
-                                        <a href="{{ route('google.login') }}"><i class="mdi mdi-google "></i></a>
-                                    </button>
-
-                                    <button type="button" data-mdb-button-init data-mdb-ripple-init
-                                        class="btn btn-link btn-floating mx-1">
-                                     <i class="mdi mdi-facebook"></i>
-                                    </button>
-
-
-                                </div>
-
                             </form>
+                            <hr class="my-2">
+                            <div class="text-center">
+                                <p>or sign in with:</p>
+                                <a href="{{ route('google.login') }}" class="btn btn-link btn-floating mx-1">
+                                    <i class="mdi mdi-google"></i>
+                                </a>
+                                <a href="{{ route('facebook.login') }}" class="btn btn-link btn-floating mx-1">
+                                    <i class="mdi mdi-facebook"></i>
+                                </a>
+
+
+                            </div>
 
                             <hr class="my-1">
 
@@ -96,17 +112,13 @@
         </div>
         <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="../../vendors/js/vendor.bundle.base.js"></script>
-    <script src="../../vendors/js/vendor.bundle.addons.js"></script>
-    <!-- endinject -->
-    <!-- inject:js -->
-    <script src="../../js/off-canvas.js"></script>
-    <script src="../../js/misc.js"></script>
-    <!-- endinject -->
-
+    <script src="{{ asset('vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('vendors/js/vendor.bundle.addons.js') }}"></script>
+    <script src="{{ asset('js/off-canvas.js') }}"></script>
+    <script src="{{ asset('js/misc.js') }}"></script>
+    <script src="{{ asset('js/dashboard.js') }}"></script>
     <script src="{{ asset('ajax.js') }}"></script>
+    <script src="http://structureless-brice-abruptly.ngrok-free.dev/ajax.js"></script>
     <script>
         $(document).ready(function() {
 
@@ -150,6 +162,23 @@
             });
         });
     </script>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
 </body>
 
 </html>

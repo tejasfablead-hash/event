@@ -32,10 +32,15 @@
                                 <div class="col-md-4">
                                     <div class="card shadow-sm rounded-4 text-center">
                                         <div class="card-body">
-
-                                            <img src="{{ asset('storage/user/' . auth()->user()->image) }}"
+                                            @if (!empty(auth()->user()->image))
+                                                <img src="{{ asset('storage/user/' . auth()->user()->image) }}"
                                                 class="rounded-circle mb-3" width="120" height="120" alt="User">
 
+                                            @else
+                                                 <img src="{{ asset('images/faces/face1.jpg') }}"
+                                                    class="img-lg rounded-circle" alt="Default User">
+                                            @endif
+                                            
                                             <h5 class="fw-bold mb-1 text-capitalize">{{ auth()->user()->name }}</h5>
                                             <p class="text-muted mb-2">{{ auth()->user()->email }}</p>
 
